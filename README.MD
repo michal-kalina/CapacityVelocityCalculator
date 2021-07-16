@@ -17,6 +17,8 @@ From root directory rnn command in terminal
 ```bash
 . Build/buildTrigger.sh
 ```
+# Testing
+We are useing [PyTest](https://docs.pytest.org/) framework for testing
 
 
 # Other
@@ -25,3 +27,4 @@ From root directory rnn command in terminal
 # Usfull links
 * [How to use bash](https://linuxhint.com/30_bash_script_examples/#t1).
 * [A word about python virtual environment](https://www.recurse.com/blog/14-there-is-no-magic-virtualenv-edition)
+* [Python testing freamworks](https://www.softwaretestinghelp.com/python-testing-frameworks/)
