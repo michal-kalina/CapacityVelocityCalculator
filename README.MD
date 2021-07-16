@@ -15,7 +15,7 @@ From root direcotry run this command. It will setup whole project and run main.p
 ## MacOs
 From root directory rnn command in terminal
 ```bash
-. Build/buildTrigger.sh
+. build/buildTrigger.sh
 ```
 # Testing
 We are useing [PyTest](https://docs.pytest.org/) framework for testing
