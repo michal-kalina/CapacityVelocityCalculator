@@ -1,5 +1,4 @@
 from say.say import say 
-from capacity.capacity import Capacit
 
 
 if __name__ == "__main__":

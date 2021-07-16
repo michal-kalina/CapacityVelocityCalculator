@@ -28,3 +28,11 @@ We are useing [PyTest](https://docs.pytest.org/) framework for testing
 * [How to use bash](https://linuxhint.com/30_bash_script_examples/#t1).
 * [A word about python virtual environment](https://www.recurse.com/blog/14-there-is-no-magic-virtualenv-edition)
 * [Python testing freamworks](https://www.softwaretestinghelp.com/python-testing-frameworks/)
+
+
+# Usfule stuff
+* [How to clear screen in terminal](https://stackoverflow.com/a/5367075)
+```
+alias cls='printf "\033c"'
+```
+Then run `cls` in terminal
