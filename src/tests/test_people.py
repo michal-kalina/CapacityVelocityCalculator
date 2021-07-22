@@ -2,18 +2,6 @@ from capacity.people import People
 import re
 from datetime import date, datetime
 
-import pytest
-
-def test_people_create_one() -> None:
-    # Arrange
-    expected = None
-
-    # Act
-    actual = People()
-
-    # Assert
-    assert actual is not expected
-
 
 def test_people_create_one() -> None:
     # Arrange
@@ -24,7 +12,7 @@ def test_people_create_one() -> None:
 
     # Act
     actual = People(expectedName, expectedSurName, expectedStarding, expectedSprintPeriod)
-    match = re.search("John_Dou_[\\d\\w]{8}-[\\d\\w]{4}-[\\d\\w]{4}-[\\d\\w]{4}-[\\d\\w]{12}", actual.Key())
+    match = re.search("John_Dou_[\\d\\w]{8}-[\\d\\w]{4}-[\\d\\w]{4}-[\\d\\w]{4}-[\\d\\w]{12}", actual.key)
 
     # Assert
     assert actual.name == expectedName
