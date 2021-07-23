@@ -32,6 +32,10 @@ class Capacity:
 
         return count / len(self.__people)
 
+    def calculate_actual_capacity(self, velocity_sp:int) -> int:
+        presence = self.calculate_presence()
+        return round(velocity_sp * presence)
+
     def __iter__(self) -> None:
         self.__iterIndex = 0
         return self

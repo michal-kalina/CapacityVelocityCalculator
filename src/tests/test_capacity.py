@@ -93,4 +93,50 @@ class TestCapacity:
         actualCalculatedPresence = capacity.calculate_presence()
 
         # Assert
-        assert actualCalculatedPresence == 0
+        assert actualCalculatedPresence == 0.0
+
+
+    def test_capacity_calculate_half_presence_of_people(self):
+        # Arrange
+        actual_start_datetime = datetime.strptime("2021-07-19", "%Y-%m-%d") # it starts at Monday
+        person1 =People("John1", "Dou2", actual_start_datetime, 7) #7 working days
+        person1.presents["2021-07-19"].present = False # Monday
+        person1.presents["2021-07-20"].present = False # Tuesday
+        person1.presents["2021-07-21"].present = False # Wednesday
+        person2 =People("John2", "Dou2", actual_start_datetime, 7) #7 working days
+        person2.presents["2021-07-22"].present = False # Tuesday
+        person2.presents["2021-07-23"].present = False # Wednesday
+        capacity = Capacity([person1, person2])
+
+        # Act
+        actualCalculatedPresence = capacity.calculate_presence()
+
+        # Assert
+        assert actualCalculatedPresence == 0.5
+
+    @pytest.fixture
+    def example_data_capacity_50(self) -> Capacity:
+        actual_start_datetime = datetime.strptime("2021-07-19", "%Y-%m-%d") # it starts at Monday
+        person1 =People("John1", "Dou2", actual_start_datetime, 7) #7 working days
+        person1.presents["2021-07-19"].present = False # Monday
+        person1.presents["2021-07-20"].present = False # Tuesday
+        person1.presents["2021-07-21"].present = False # Wednesday
+        person2 =People("John2", "Dou2", actual_start_datetime, 7) #7 working days
+        person2.presents["2021-07-22"].present = False # Tuesday
+        person2.presents["2021-07-23"].present = False # Wednesday
+        return Capacity([person1, person2])
+
+    @pytest.mark.parametrize(["actual_velocity_sp", "expect_velocity_sp"], [
+        (50, 25)
+    ])
+    def test_capacity_calculate_actual_capacity(self, example_data_capacity_50, actual_velocity_sp, expect_velocity_sp):
+        # Arrange
+        capacity: Capacity = example_data_capacity_50
+
+        # Act
+        actualCalculatedPresence: int = capacity.calculate_actual_capacity(actual_velocity_sp)
+
+        # Assert
+        assert actualCalculatedPresence == expect_velocity_sp
+
+
