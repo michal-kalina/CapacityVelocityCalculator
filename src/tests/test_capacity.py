@@ -126,12 +126,12 @@ class TestCapacity:
         person2.presents["2021-07-23"].present = False # Wednesday
         return Capacity([person1, person2])
 
-    @pytest.mark.parametrize(["actual_velocity_sp", "expect_velocity_sp"], [
-        (50, 25)
+    @pytest.mark.parametrize(["example_data_capacity", "actual_velocity_sp", "expect_velocity_sp"], [
+        (pytest.lazy_fixture("example_data_capacity_50"), 50, 25)
     ])
-    def test_capacity_calculate_actual_capacity(self, example_data_capacity_50, actual_velocity_sp, expect_velocity_sp):
+    def test_capacity_calculate_actual_capacity(self, example_data_capacity, actual_velocity_sp, expect_velocity_sp):
         # Arrange
-        capacity: Capacity = example_data_capacity_50
+        capacity: Capacity = example_data_capacity
 
         # Act
         actualCalculatedPresence: int = capacity.calculate_actual_capacity(actual_velocity_sp)

@@ -30,6 +30,7 @@ We are using [PyTest](https://docs.pytest.org/) framework for testing
 * [A word about python virtual environment](https://www.recurse.com/blog/14-there-is-no-magic-virtualenv-edition)
 * [Python testing frameworks](https://www.softwaretestinghelp.com/python-testing-frameworks/)
 * [PYTHONPATH](https://docs.python.org/3/using/cmdline.html#envvar-PYTHONPATH)
+* [How to Use Fixtures as Arguments in pytest.mark.parametrize](https://miguendes.me/how-to-use-fixtures-as-arguments-in-pytestmarkparametrize)
 
 
 # Useful stuff
