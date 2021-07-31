@@ -28,9 +28,11 @@ We are using [PyTest](https://docs.pytest.org/) framework for testing
 # Useful links
 * [How to use bash](https://linuxhint.com/30_bash_script_examples/#t1).
 * [A word about python virtual environment](https://www.recurse.com/blog/14-there-is-no-magic-virtualenv-edition)
+## PyTest
 * [Python testing frameworks](https://www.softwaretestinghelp.com/python-testing-frameworks/)
 * [PYTHONPATH](https://docs.python.org/3/using/cmdline.html#envvar-PYTHONPATH)
 * [How to Use Fixtures as Arguments in pytest.mark.parametrize](https://miguendes.me/how-to-use-fixtures-as-arguments-in-pytestmarkparametrize)
+* [How to pass argument to a fixture](https://stackoverflow.com/a/44701916)
 
 
 # Useful stuff
