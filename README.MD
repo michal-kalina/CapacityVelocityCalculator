@@ -28,6 +28,8 @@ We are using [PyTest](https://docs.pytest.org/) framework for testing
 # Useful links
 * [How to use bash](https://linuxhint.com/30_bash_script_examples/#t1).
 * [A word about python virtual environment](https://www.recurse.com/blog/14-there-is-no-magic-virtualenv-edition)
+## Python
+* [Forward references](https://www.python.org/dev/peps/pep-0484/#forward-references)
 ## PyTest
 * [Python testing frameworks](https://www.softwaretestinghelp.com/python-testing-frameworks/)
 * [PYTHONPATH](https://docs.python.org/3/using/cmdline.html#envvar-PYTHONPATH)

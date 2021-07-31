@@ -1,13 +1,13 @@
 from re import S
-from .people import People
+from .people import Person
 from typing import Union
 
 class Capacity:
-    def __init__(self, people: Union[list[People], dict[str, People]]) -> None:
+    def __init__(self, people: Union[list[Person], dict[str, Person]]) -> None:
         if isinstance(people, dict):
             self.__people = people
         elif isinstance(people, list):
-            self.__people = dict[str, People]()
+            self.__people = dict[str, Person]()
             for item in people:
                 self.__people[item.key] = item
         else:
@@ -16,7 +16,7 @@ class Capacity:
     def get_people(self) -> dict:
         return self.__people
 
-    def add_person(self, new_person:People) -> None:
+    def add_person(self, new_person:Person) -> None:
         self.__people[new_person.key] = new_person
 
     def set_presence(self, key:str, date:str, value:bool) -> None:

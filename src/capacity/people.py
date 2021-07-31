@@ -10,7 +10,17 @@ class PresentItem:
         self.work_day: Final[bool] = not date.weekday() in (5, 6) # 5 Saturday, 6 Sunday
         self.present = False if date.weekday() in (5, 6) else True
 
-class People:
+    @staticmethod
+    def Create(date: datetime, value: bool) -> "PresentItem":
+        result = PresentItem(date)
+        # T and T -> T
+        # F and T -> F
+        # T and F -> F
+        # F and F -> F
+        result.present = value and result.work_day
+        return result
+
+class Person:
     def __init__(self, name:str, surname:str, starting_date:datetime=datetime.now(), period:int=14) -> None:
         self.name: Final[str] = name
         self.surname: Final[str] = surname
