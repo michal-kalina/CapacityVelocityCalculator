@@ -6,7 +6,7 @@ This application use python 3 to calculate Sprint Capacity and Velocity per spri
     - Python 3.9.*
     - VS Code with:
         - Python extension by Microsoft
-        - Material Icon Theae by Philipp Kief
+        - Material Icon Theme by Philip Kief
         - GitLens by Eric Amodio
         - Python Test Explorer by Little Fox Team
 
@@ -14,13 +14,23 @@ This application use python 3 to calculate Sprint Capacity and Velocity per spri
 # Run
 From root directory run this command. It will setup whole project and run main.py script
 ## MacOs
-From root directory rnn command in terminal
+From root directory run command in terminal
 ```bash
 . build/buildTrigger.sh
 ```
 # Testing
 We are using [PyTest](https://docs.pytest.org/) framework for testing
 
+# Test coverage
+We are using [coverage](https://coverage.readthedocs.io/en/coverage-5.5/install.html) framework to analyze code coverage.
+Just run
+```bash
+coverage run -m pytest
+```
+And to get report run
+```bash
+coverage report
+```
 
 # Other
 * This doc will use [GitHub formatting](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).

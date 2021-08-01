@@ -1,0 +1,6 @@
+[run]
+include =
+    src/**.*
+omit =
+    src/tests/**.*
+    src/*__init__.py
