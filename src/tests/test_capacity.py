@@ -14,6 +14,22 @@ class TestCapacity:
         # Assert
         assert len(actual.get_people()) == 0
 
+    def test_capacity_create_empty_dict_of_people(self):
+        # Arrange
+        # Act
+        actual = Capacity({})
+
+        # Assert
+        assert len(actual.get_people()) == 0
+
+    def test_capacity_create_raise_exception(self):
+        with pytest.raises(TypeError, match=r"Unknown type for '.*?' arg") as exception_info:
+            # Arrange
+            # Act
+            actual = Capacity(None)
+            # Assert
+
+
     def test_capacity_create_with_people(self):
         # Arrange
         expected = None
@@ -98,6 +114,7 @@ class TestCapacity:
         ("2021-07-19", [{"lp": 1, "days": 5}, {"lp": 2, "days": 5}], 0.5),
         ("2021-07-19", [{"lp": 1, "days": 0}, {"lp": 2, "days": 0}], 1.0),
         ("2021-07-19", [{"lp": 1, "days": 14}, {"lp": 2, "days": 14}], 0.0),
+        ("2021-07-19", [], 0.0),
     ])
     def test_people_parametrized(self, get_capacity_data, test_date, test_data, expected_capacity_percentage):
 
@@ -112,6 +129,7 @@ class TestCapacity:
 
 
     @pytest.mark.parametrize(["test_date", "test_data", "actual_velocity_sp", "expect_velocity_sp"], [
+        ("2021-07-19", [], 50, 0), #0%
         ("2021-07-19", [{"lp": 1, "days": 14}, {"lp": 2, "days": 14}], 50, 0), #0%
         ("2021-07-19", [{"lp": 1, "days": 9}, {"lp": 2, "days": 10}], 50, 12), #25%
         ("2021-07-19", [{"lp": 1, "days": 7}, {"lp": 2, "days": 7}], 50, 25), #50%
