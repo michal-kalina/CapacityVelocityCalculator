@@ -3,11 +3,15 @@ from uuid import uuid1, UUID
 from datetime import date, timedelta, datetime
 from typing import Final
 
+
 class PresentItem:
     def __init__(self, date: datetime) -> None:
         self.key: Final[str] = date.strftime("%Y-%m-%d")
         self.date: Final[datetime] = date
-        self.work_day: Final[bool] = not date.weekday() in (5, 6) # 5 Saturday, 6 Sunday
+        self.work_day: Final[bool] = not date.weekday() in (
+            5,
+            6,
+        )  # 5 Saturday, 6 Sunday
         self.present = False if date.weekday() in (5, 6) else True
 
     @staticmethod
@@ -20,8 +24,15 @@ class PresentItem:
         result.present = value and result.work_day
         return result
 
+
 class Person:
-    def __init__(self, name:str, surname:str, starting_date:datetime=datetime.now(), period:int=14) -> None:
+    def __init__(
+        self,
+        name: str,
+        surname: str,
+        starting_date: datetime = datetime.now(),
+        period: int = 14,
+    ) -> None:
         self.name: Final[str] = name
         self.surname: Final[str] = surname
         self.__id: Final[UUID] = uuid1()
@@ -52,5 +63,5 @@ class Person:
         for day in self.presents.values():
             count = count + (1 if (day.work_day and day.present == True) else 0)
             size = size + (-1 if not day.work_day else 0)
-        
+
         return count / size

@@ -32,6 +32,12 @@ And to get report run
 coverage report
 ```
 
+# Linting
+While you are in venv active mode
+```bash
+black .
+```
+
 # Other
 * This doc will use [GitHub formatting](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
 
@@ -46,6 +52,11 @@ coverage report
 * [How to Use Fixtures as Arguments in pytest.mark.parametrize](https://miguendes.me/how-to-use-fixtures-as-arguments-in-pytestmarkparametrize)
 * [How to pass argument to a fixture](https://stackoverflow.com/a/44701916)
 
+## Black
+* [Black github repository](https://github.com/psf/black)
+* [Setup black in VS Code](https://marcobelo.medium.com/setting-up-python-black-on-visual-studio-code-5318eba4cd00)
+* [Setup black in VS Code 2](https://py-vscode.readthedocs.io/en/latest/files/linting.html)
+* [Auto format on save](https://stackoverflow.com/questions/50606758/vscode-how-do-you-autoformat-on-save)
 
 # Useful stuff
 * [How to clear screen in terminal](https://stackoverflow.com/a/5367075)

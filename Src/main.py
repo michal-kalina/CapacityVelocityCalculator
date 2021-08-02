@@ -1,4 +1,4 @@
-from say.say import say 
+from say.say import say
 
 
 if __name__ == "__main__":
