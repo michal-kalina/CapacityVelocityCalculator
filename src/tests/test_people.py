@@ -8,12 +8,17 @@ def test_people_create_one() -> None:
     # Arrange
     expectedName = "John"
     expectedSurName = "Dou"
-    expectedStarding:date = datetime.now()
-    expectedSprintPeriod:int = 14
+    expectedStarding: date = datetime.now()
+    expectedSprintPeriod: int = 14
 
     # Act
-    actual = Person(expectedName, expectedSurName, expectedStarding, expectedSprintPeriod)
-    match = re.search("John_Dou_[\\d\\w]{8}-[\\d\\w]{4}-[\\d\\w]{4}-[\\d\\w]{4}-[\\d\\w]{12}", actual.key)
+    actual = Person(
+        expectedName, expectedSurName, expectedStarding, expectedSprintPeriod
+    )
+    match = re.search(
+        "John_Dou_[\\d\\w]{8}-[\\d\\w]{4}-[\\d\\w]{4}-[\\d\\w]{4}-[\\d\\w]{12}",
+        actual.key,
+    )
 
     # Assert
     assert actual.name == expectedName
@@ -24,7 +29,7 @@ def test_people_create_one() -> None:
     for key in actual.presents.keys():
         item = actual.presents[key]
         assert item.date is not None
-        if(item.work_day):
+        if item.work_day:
             assert item.present == True
         else:
             assert item.present == False
@@ -42,16 +47,18 @@ def test_person_presence_create(str_to_datetime) -> None:
 
     # Assert
     assert len(person.presents) == expected_days
-    assert person.presents["2021-07-19"].present == True # Monday
-    assert person.presents["2021-07-20"].present == False # Tuesday
-    assert person.presents["2021-07-21"].present == True # Wendsday
-    assert person.presents["2021-07-22"].present == True # Thursday
-    assert person.presents["2021-07-23"].present == True # Friday
-    assert person.presents["2021-07-24"].present == False # Saturday
-    assert person.presents["2021-07-25"].present == False # Sunday
+    assert person.presents["2021-07-19"].present == True  # Monday
+    assert person.presents["2021-07-20"].present == False  # Tuesday
+    assert person.presents["2021-07-21"].present == True  # Wendsday
+    assert person.presents["2021-07-22"].present == True  # Thursday
+    assert person.presents["2021-07-23"].present == True  # Friday
+    assert person.presents["2021-07-24"].present == False  # Saturday
+    assert person.presents["2021-07-25"].present == False  # Sunday
 
 
-def test_person_presence_create_presents_on_weekend_days_cant_be_alterate(str_to_datetime) -> None:
+def test_person_presence_create_presents_on_weekend_days_cant_be_alterate(
+    str_to_datetime,
+) -> None:
     # Arrange
     starting_date = str_to_datetime("2021-07-19")
     saturday = str_to_datetime("2021-07-24")
@@ -65,13 +72,13 @@ def test_person_presence_create_presents_on_weekend_days_cant_be_alterate(str_to
 
     # Assert
     assert len(person.presents) == expected_days
-    assert person.presents["2021-07-19"].present == True # Monday
-    assert person.presents["2021-07-20"].present == True # Tuesday
-    assert person.presents["2021-07-21"].present == True # Wendsday
-    assert person.presents["2021-07-22"].present == True # Thursday
-    assert person.presents["2021-07-23"].present == True # Friday
-    assert person.presents["2021-07-24"].present == False # Saturday
-    assert person.presents["2021-07-25"].present == False # Sunday
+    assert person.presents["2021-07-19"].present == True  # Monday
+    assert person.presents["2021-07-20"].present == True  # Tuesday
+    assert person.presents["2021-07-21"].present == True  # Wendsday
+    assert person.presents["2021-07-22"].present == True  # Thursday
+    assert person.presents["2021-07-23"].present == True  # Friday
+    assert person.presents["2021-07-24"].present == False  # Saturday
+    assert person.presents["2021-07-25"].present == False  # Sunday
 
 
 @pytest.fixture
@@ -81,11 +88,10 @@ def str_to_datetime():
 
     return _str_to_datetime
 
-@pytest.mark.parametrize(["days", "expected_calculate_presence"], [
-    (0, 0),
-    (1, 1),
-    (14, 1)
-])
+
+@pytest.mark.parametrize(
+    ["days", "expected_calculate_presence"], [(0, 0), (1, 1), (14, 1)]
+)
 def test_person_calculate_presence(str_to_datetime, days, expected_calculate_presence):
     # Arrange
 

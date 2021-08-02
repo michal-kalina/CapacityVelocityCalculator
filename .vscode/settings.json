@@ -15,4 +15,5 @@
     "cSpell.words": [
         "pytest"
     ],
+    "python.linting.flake8Enabled": true,
 }
