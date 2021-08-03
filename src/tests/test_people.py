@@ -1,4 +1,4 @@
-from capacity.people import Person, PresentItem
+from capacity.person import Person, PresentItem
 import re
 from datetime import date, datetime
 import pytest
@@ -25,14 +25,14 @@ def test_people_create_one() -> None:
     assert actual.surname == expectedSurName
     assert actual.starting_date == expectedStarding
     assert match is not None
-    assert len(actual.presents) == expectedSprintPeriod
-    for key in actual.presents.keys():
-        item = actual.presents[key]
+    assert len(actual.presences) == expectedSprintPeriod
+    for key in actual.presences.keys():
+        item = actual.presences[key]
         assert item.date is not None
         if item.work_day:
-            assert item.present == True
+            assert item.presence == True
         else:
-            assert item.present == False
+            assert item.presence == False
 
 
 def test_person_presence_create(str_to_datetime) -> None:
@@ -43,20 +43,20 @@ def test_person_presence_create(str_to_datetime) -> None:
     person = Person("John", "Dou", starting_date, expected_days)
 
     # Act
-    person.presents = PresentItem.Create(change_data, False)
+    person.presences = PresentItem.Create(change_data, False)
 
     # Assert
-    assert len(person.presents) == expected_days
-    assert person.presents["2021-07-19"].present == True  # Monday
-    assert person.presents["2021-07-20"].present == False  # Tuesday
-    assert person.presents["2021-07-21"].present == True  # Wendsday
-    assert person.presents["2021-07-22"].present == True  # Thursday
-    assert person.presents["2021-07-23"].present == True  # Friday
-    assert person.presents["2021-07-24"].present == False  # Saturday
-    assert person.presents["2021-07-25"].present == False  # Sunday
+    assert len(person.presences) == expected_days
+    assert person.presences["2021-07-19"].presence == True  # Monday
+    assert person.presences["2021-07-20"].presence == False  # Tuesday
+    assert person.presences["2021-07-21"].presence == True  # Wendsday
+    assert person.presences["2021-07-22"].presence == True  # Thursday
+    assert person.presences["2021-07-23"].presence == True  # Friday
+    assert person.presences["2021-07-24"].presence == False  # Saturday
+    assert person.presences["2021-07-25"].presence == False  # Sunday
 
 
-def test_person_presence_create_presents_on_weekend_days_cant_be_alterate(
+def test_person_presence_create_presences_on_weekend_days_cant_be_alterate(
     str_to_datetime,
 ) -> None:
     # Arrange
@@ -67,18 +67,18 @@ def test_person_presence_create_presents_on_weekend_days_cant_be_alterate(
     person = Person("John", "Dou", starting_date, expected_days)
 
     # Act
-    person.presents = PresentItem.Create(saturday, False)
-    person.presents = PresentItem.Create(sunday, False)
+    person.presences = PresentItem.Create(saturday, False)
+    person.presences = PresentItem.Create(sunday, False)
 
     # Assert
-    assert len(person.presents) == expected_days
-    assert person.presents["2021-07-19"].present == True  # Monday
-    assert person.presents["2021-07-20"].present == True  # Tuesday
-    assert person.presents["2021-07-21"].present == True  # Wendsday
-    assert person.presents["2021-07-22"].present == True  # Thursday
-    assert person.presents["2021-07-23"].present == True  # Friday
-    assert person.presents["2021-07-24"].present == False  # Saturday
-    assert person.presents["2021-07-25"].present == False  # Sunday
+    assert len(person.presences) == expected_days
+    assert person.presences["2021-07-19"].presence == True  # Monday
+    assert person.presences["2021-07-20"].presence == True  # Tuesday
+    assert person.presences["2021-07-21"].presence == True  # Wendsday
+    assert person.presences["2021-07-22"].presence == True  # Thursday
+    assert person.presences["2021-07-23"].presence == True  # Friday
+    assert person.presences["2021-07-24"].presence == False  # Saturday
+    assert person.presences["2021-07-25"].presence == False  # Sunday
 
 
 @pytest.fixture

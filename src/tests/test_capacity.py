@@ -1,5 +1,5 @@
 from capacity.capacity import Capacity
-from capacity.people import Person, PresentItem
+from capacity.person import Person, PresentItem
 import re
 from datetime import datetime, timedelta
 
@@ -13,7 +13,7 @@ class TestCapacity:
         actual = Capacity([])
 
         # Assert
-        assert len(actual.get_people()) == 0
+        assert len(actual.get_persons()) == 0
 
     def test_capacity_create_empty_dict_of_people(self):
         # Arrange
@@ -21,7 +21,7 @@ class TestCapacity:
         actual = Capacity({})
 
         # Assert
-        assert len(actual.get_people()) == 0
+        assert len(actual.get_persons()) == 0
 
     def test_capacity_create_raise_exception(self):
         with pytest.raises(
@@ -40,7 +40,7 @@ class TestCapacity:
         actual = Capacity({"example": Person(None, None)})
 
         # Assert
-        assert len(actual.get_people()) == 1
+        assert len(actual.get_persons()) == 1
 
     def test_capacity_iterate_people(self):
         # Arrange
@@ -54,7 +54,7 @@ class TestCapacity:
             # assert item is Person
             assert re.search("John\\d", item.name) is not None
             assert re.search("Dou\\d", item.surname) is not None
-            assert len(actual.get_people()) == 2
+            assert len(actual.get_persons()) == 2
 
     def test_capacity_add_person(self):
         # Arrange
@@ -65,7 +65,7 @@ class TestCapacity:
         # Act
         actual.add_person(Person("John3", "Dou3"))
         # Assert
-        assert len(actual.get_people()) == 3
+        assert len(actual.get_persons()) == 3
         for item in actual:
             # assert item is Person
             assert re.search("John\\d", item.name) is not None
@@ -78,7 +78,8 @@ class TestCapacity:
         actualPersonKey = actualPerson.key
         actual = Capacity([actualPerson])
         assert (
-            actual.get_people()[actualPersonKey].presents["2021-07-20"].present == True
+            actual.get_persons()[actualPersonKey].presences["2021-07-20"].presence
+            == True
         )
 
         # Act
@@ -86,7 +87,8 @@ class TestCapacity:
 
         # Assert
         assert (
-            actual.get_people()[actualPersonKey].presents["2021-07-20"].present == False
+            actual.get_persons()[actualPersonKey].presences["2021-07-20"].presence
+            == False
         )
 
     @pytest.fixture
@@ -104,7 +106,7 @@ class TestCapacity:
                 f"John{lp}", f"Dou{lp}", _str_to_datetime(date), 14
             )  # 14 days
             for day in _generate_days(_str_to_datetime(date), days):
-                person.presents = PresentItem.Create(day, False)
+                person.presences = PresentItem.Create(day, False)
 
             return person
 
@@ -120,13 +122,10 @@ class TestCapacity:
     @pytest.mark.parametrize(
         ["test_date", "test_data", "expected_capacity_percentage"],
         [
-            (
-                "2021-07-19",
-                [{"lp": 1, "days": 2}, {"lp": 2, "days": 3}],
-                0.75,
-            ),  # people are appsent for 5 days out of 20 which is 0.75 capacity percentage
-            ("2021-07-19", [{"lp": 1, "days": 5}, {"lp": 2, "days": 5}], 0.5),
             ("2021-07-19", [{"lp": 1, "days": 0}, {"lp": 2, "days": 0}], 1.0),
+            ("2021-07-19", [{"lp": 1, "days": 2}, {"lp": 2, "days": 3}], 0.75),
+            ("2021-07-19", [{"lp": 1, "days": 5}, {"lp": 2, "days": 5}], 0.5),
+            ("2021-07-19", [{"lp": 1, "days": 9}, {"lp": 2, "days": 10}], 0.25),
             ("2021-07-19", [{"lp": 1, "days": 14}, {"lp": 2, "days": 14}], 0.0),
             ("2021-07-19", [], 0.0),
         ],
