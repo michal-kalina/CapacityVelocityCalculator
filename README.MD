@@ -33,7 +33,7 @@ coverage report
 ```
 
 # Linting
-While you are in venv active mode
+While you are in `venv` active mode
 ```bash
 black .
 ```

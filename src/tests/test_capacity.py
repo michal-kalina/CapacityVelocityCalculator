@@ -30,7 +30,7 @@ class TestCapacity:
             # Arrange
             # Act
             actual = Capacity(None)
-            # Assert
+        # Assert
 
     def test_capacity_create_with_people(self):
         # Arrange
