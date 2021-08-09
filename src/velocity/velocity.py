@@ -1,3 +1,7 @@
+from statistics import mean
+from functools import reduce
+
+
 class VelocityItem:
     def __init__(
         self, sprint_name, committed_sp, compleated_sp, capacity: float
@@ -34,5 +38,12 @@ class VelocityItem:
 
 
 class Velocity:
-    def __init__(self) -> None:
-        pass
+    def __init__(self, data: list[VelocityItem]) -> None:
+        self.__data = data
+
+    def calculate_velocity(self) -> float:
+        def _get_velocity(data: list[VelocityItem]) -> list[int]:
+            fun_get_velocity = lambda d: d.velocity
+            return list(map(fun_get_velocity, data))
+
+        return mean(_get_velocity(self.__data))
