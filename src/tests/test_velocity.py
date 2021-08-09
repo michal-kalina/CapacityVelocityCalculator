@@ -23,10 +23,38 @@ class TestVelocityItemCalculator:
             (
                 [
                     VelocityItem("Sprint 1", 120, 100, 0.95),
-                    VelocityItem("Sprint 1", 120, 100, 0.95),
+                    VelocityItem("Sprint 2", 120, 100, 0.95),
                 ],
                 95,
-            )
+            ),
+            (
+                [
+                    VelocityItem("Sprint 1", 120, 100, 0.8),  # 80
+                    VelocityItem("Sprint 2", 120, 50, 0.5),  # 25
+                    VelocityItem("Sprint 2", 120, 100, 0.75),  # 75
+                ],
+                60,
+            ),
+            (
+                [],
+                0,
+            ),
+            (
+                [None, 0, "", 0.0, True, False],
+                0,
+            ),
+            (
+                [
+                    VelocityItem("Sprint 0", 0, 0, 0),
+                ],
+                0,
+            ),
+            (
+                [
+                    VelocityItem("Sprint None", 0, 0, 1),
+                ],
+                0,
+            ),
         ],
     )
     def test_calculate_velocity(self, velocity_item_data, expected_velocity):
@@ -36,3 +64,13 @@ class TestVelocityItemCalculator:
         actual_velocity = velocity.calculate_velocity()
         # Assert
         assert actual_velocity == expected_velocity
+
+    def test_raise_error_when_invalid_data_passed(self):
+        with pytest.raises(
+            ValueError,
+            match="'data' can't be None",
+        ) as exception_info:
+            # Arrange
+            # Act
+            actual = Velocity(None)
+        # Assert

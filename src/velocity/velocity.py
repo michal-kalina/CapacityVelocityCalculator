@@ -6,10 +6,12 @@ class VelocityItem:
     def __init__(
         self, sprint_name, committed_sp, compleated_sp, capacity: float
     ) -> None:
-        self.__sprint_name = sprint_name
-        self.__committed_sp = committed_sp
-        self.__compleated_sp = compleated_sp
-        if capacity >= 0 and capacity <= 1:
+        self.__sprint_name = (
+            sprint_name if sprint_name is not None else "None sprint name was provided."
+        )
+        self.__committed_sp = committed_sp if committed_sp is not None else 0
+        self.__compleated_sp = compleated_sp if compleated_sp is not None else 0
+        if capacity is not None and capacity >= 0 and capacity <= 1:
             self.__capacity = capacity
         else:
             raise ValueError(
@@ -39,11 +41,18 @@ class VelocityItem:
 
 class Velocity:
     def __init__(self, data: list[VelocityItem]) -> None:
+        if data is None:
+            raise ValueError("'data' can't be None")
         self.__data = data
 
     def calculate_velocity(self) -> float:
         def _get_velocity(data: list[VelocityItem]) -> list[int]:
-            fun_get_velocity = lambda d: d.velocity
+            fun_get_velocity = (
+                lambda d: d.velocity if isinstance(d, VelocityItem) else 0
+            )
             return list(map(fun_get_velocity, data))
+
+        if len(self.__data) == 0:
+            return 0.0
 
         return mean(_get_velocity(self.__data))
