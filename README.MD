@@ -44,6 +44,7 @@ black .
 # Useful links
 * [How to use bash](https://linuxhint.com/30_bash_script_examples/#t1).
 * [A word about python virtual environment](https://www.recurse.com/blog/14-there-is-no-magic-virtualenv-edition)
+* [How to use lambda function](https://realpython.com/python-lambda/#map)
 ## Python
 * [Forward references](https://www.python.org/dev/peps/pep-0484/#forward-references)
 ## PyTest
