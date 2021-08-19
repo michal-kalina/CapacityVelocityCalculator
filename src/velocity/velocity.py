@@ -45,7 +45,7 @@ class Velocity:
             raise ValueError("'data' can't be None")
         self.__data = data
 
-    def calculate_velocity(self) -> float:
+    def calculate_velocity(self) -> int:
         def _get_velocity(data: list[VelocityItem]) -> list[int]:
             fun_get_velocity = (
                 lambda d: d.velocity if isinstance(d, VelocityItem) else 0
@@ -55,4 +55,4 @@ class Velocity:
         if len(self.__data) == 0:
             return 0.0
 
-        return mean(_get_velocity(self.__data))
+        return round(mean(_get_velocity(self.__data)))
