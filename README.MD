@@ -18,6 +18,17 @@ From root directory run command in terminal
 ```bash
 . build/buildTrigger.sh
 ```
+
+### Activate python
+```bash
+. venv/bin/activate
+```
+
+# Start Django
+```bash
+. build/runServer.sh
+```
+
 # Testing
 We are using [PyTest](https://docs.pytest.org/) framework for testing
 
@@ -57,6 +68,9 @@ black .
 * [Setup black in VS Code](https://marcobelo.medium.com/setting-up-python-black-on-visual-studio-code-5318eba4cd00)
 * [Setup black in VS Code 2](https://py-vscode.readthedocs.io/en/latest/files/linting.html)
 * [Auto format on save](https://stackoverflow.com/questions/50606758/vscode-how-do-you-autoformat-on-save)
+
+## Django
+* [Writing your first Django app](https://docs.djangoproject.com/en/3.2/intro/tutorial01/)
 
 # Useful stuff
 * [How to clear screen in terminal](https://stackoverflow.com/a/5367075)
