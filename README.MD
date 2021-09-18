@@ -71,6 +71,8 @@ black .
 
 ## Django
 * [Writing your first Django app](https://docs.djangoproject.com/en/3.2/intro/tutorial01/)
+* [Migrations](https://docs.djangoproject.com/en/3.2/topics/migrations/)
+* [Queries](https://docs.djangoproject.com/en/3.2/topics/db/queries/)
 
 # Useful stuff
 * [How to clear screen in terminal](https://stackoverflow.com/a/5367075)

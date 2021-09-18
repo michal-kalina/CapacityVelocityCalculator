@@ -2,6 +2,10 @@ from django.db import models
 from datetime import timedelta, datetime
 
 # Create your models here.
+class Sprint(models.Model):
+    id = models.PositiveIntegerField(unique=True, primary_key=True)
+    name = models.CharField(max_length=120)
+
 class Person(models.Model):
     id = models.PositiveIntegerField(unique=True, primary_key=True)
     name = models.CharField(max_length=120)
@@ -9,8 +13,8 @@ class Person(models.Model):
 
 class SprintCapacity(models.Model):
     id = models.PositiveIntegerField(unique=True, primary_key=True)
-    person_id = models.ForeignKey(Person, on_delete=models.CASCADE)
-    title = models.CharField(max_length=120)
+    sprint = models.ForeignKey(Sprint, on_delete=models.CASCADE, null=True, default=None, related_name='sprint_capacity')
+    person = models.ForeignKey(Person, on_delete=models.CASCADE, null=True, default=None, related_name='sprint_capacity')
     velocity = models.PositiveIntegerField()
     capacity = models.PositiveIntegerField()
 
@@ -20,6 +24,6 @@ class SprintCapacityPresenceItem(models.Model):
         ('N', 'No')
     )
     id = models.PositiveIntegerField(unique=True, primary_key=True)
-    sprint_id = models.ForeignKey(SprintCapacity, on_delete=models.CASCADE)
+    sprint_capacity = models.ForeignKey(SprintCapacity, on_delete=models.CASCADE, null=True, default=None, related_name='sprint_capacity_presence')
     date = models.DateTimeField()
     presence = models.CharField(max_length=1, choices=PRESENCE_CHOICES)
