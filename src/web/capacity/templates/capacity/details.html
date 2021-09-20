@@ -1,0 +1,25 @@
+{% if output %}
+<table>
+    <p>Sprint: {{ output.sprint_name }}</p>
+    <thead>
+        <tr>
+            <th>Person</th>
+            {% for d in output.items.0.data %}
+            <th>{{ d.date|date:"Y-m-d" }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in output.items %}
+        <tr>
+            <td>{{ item.person_name }}</td>
+            {% for d in item.data %}
+            <td>{{ d.presence }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No data is available.</p>
+{% endif %}

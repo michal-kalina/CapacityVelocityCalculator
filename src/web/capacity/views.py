@@ -1,11 +1,66 @@
+from typing import Tuple
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import Http404
+from django.db.models import QuerySet
+from .models import Person, SprintCapacity, Sprint, SprintCapacityPresenceItem
 
-from .models import SprintCapacity, Sprint
+from datetime import datetime
+
+class OutputItemPresenceDto:
+    def __init__(self, date: datetime, presence: SprintCapacityPresenceItem.PRESENCE_CHOICES) -> None:
+        self.date: datetime = date
+        self.presence: SprintCapacityPresenceItem.PRESENCE_CHOICES = presence
+class OutputItemDto:
+    def __init__(self, person_name: str, data: list[OutputItemPresenceDto]) -> None:
+        self.person_name: str = person_name
+        self.data: list[OutputItemPresenceDto] = data
+class OutputStringDto:
+    def __init__(self, id:str, name:str) -> None:
+        self.id = id
+        self.name = name
+
+class OutputDto:
+    def __init__(self, sprint_name: str, items: list[OutputItemDto]) -> None:
+        self.sprint_name: str = sprint_name
+        self.items: list[OutputItemDto] = items
+
+def index(request):
+    last_five_sprints: QuerySet[Sprint] = Sprint.objects.order_by("-id")[:5]
+    output: list[OutputStringDto] = list[OutputStringDto]()
+    for sprint in last_five_sprints:
+        output.append(OutputStringDto(sprint.id, sprint.name))
+    context = {
+        'output': output,
+    }
+    return render(request, 'capacity/index.html', context)
 
 # Create your views here.
-def index(request):
-    current_sprint = Sprint.objects.last()
-    current_sprint_capacity = SprintCapacity.objects.filter(sprint_id=current_sprint.id).order_by("id")
+def details(request, sprint_id):
+    outputItems: list[OutputItemDto] = list[OutputItemDto]()
+    outputItemPresences: list[OutputItemPresenceDto] = None
+    try:
+        current_sprint: QuerySet[Sprint] = Sprint.objects.get(id=sprint_id)
+    except Sprint.DoesNotExist:
+        raise Http404("No sprint has been defined")
+    current_sprint_capacities: QuerySet[SprintCapacity] = SprintCapacity.objects.filter(sprint__id=current_sprint.id)
 
-    return HttpResponse("Hello this is capacity calculator index page!")
+    for capacity in current_sprint_capacities:
+        print(capacity)
+        # Init arrays
+        outputItemPresences: list[OutputItemPresenceDto] = list[OutputItemPresenceDto]()
+
+        # Get person and its presences
+        #person: QuerySet[Person] = Person.objects.get(id=capacity.person.id)
+        presences: QuerySet[SprintCapacityPresenceItem] = SprintCapacityPresenceItem.objects.filter(sprint_capacity__id=capacity.id).order_by('date')
+
+        # Convert it to DTO lists
+        for presence in presences:
+            print(presence)
+            outputItemPresences.append(OutputItemPresenceDto(presence.date, presence.presence))
+        outputItems.append(OutputItemDto(f'{capacity.person.name} {capacity.person.surname}', outputItemPresences))
+
+    output = OutputDto(current_sprint.name, outputItems)
+    context = {
+        'output': output,
+    }
+    return render(request, 'capacity/details.html', context)
