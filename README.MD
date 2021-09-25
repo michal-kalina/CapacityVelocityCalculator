@@ -9,6 +9,7 @@ This application use python 3 to calculate Sprint Capacity and Velocity per spri
         - Material Icon Theme by Philip Kief
         - GitLens by Eric Amodio
         - Python Test Explorer by Little Fox Team
+        - Django by Baptiste Darthenay
 
 
 # Run
@@ -27,6 +28,11 @@ From root directory run command in terminal
 # Start Django
 ```bash
 . build/runServer.sh
+```
+
+# Migrate Django db
+```bash
+. build/runMigrate.sh
 ```
 
 # Testing

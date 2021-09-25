@@ -1,9 +1,13 @@
-{% if output %}
-<ul>
-    {% for item in output %}
-    <li><a href="{% url 'capacity:details' item.id %}">{{ item.name }}</a></li>
-    {% endfor %}
-</ul>
-{% else %}
-<p>No data is available.</p>
-{% endif %}
+{% extends "main.html" %}
+
+{% block content %}
+    {% if output %}
+    <ul>
+        {% for item in output %}
+        <li><a href="{% url 'capacity:details' item.id %}">{{ item.name }}</a></li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No data is available.</p>
+    {% endif %}
+{% endblock %}
