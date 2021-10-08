@@ -6,5 +6,6 @@ from . import views
 app_name = "capacity"
 urlpatterns = [
     path("", views.index, name="index"),
-    path("<int:sprint_id>/", views.details, name="details")
+    path("<int:sprint_id>", views.details, name="details"),
+    path("update/", views.update, name="update")
 ]

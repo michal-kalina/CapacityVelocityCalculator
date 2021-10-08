@@ -1,13 +1,14 @@
 from typing import Tuple
 from django.shortcuts import render
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.db.models import QuerySet
 from .models import Person, SprintCapacity, Sprint, SprintCapacityPresenceItem
 
 from datetime import datetime
 
 class OutputItemPresenceDto:
-    def __init__(self, date: datetime, presence: SprintCapacityPresenceItem.PRESENCE_CHOICES) -> None:
+    def __init__(self, id:int, date: datetime, presence: SprintCapacityPresenceItem.PRESENCE_CHOICES) -> None:
+        self.id: int = id
         self.date: datetime = date
         self.presence: SprintCapacityPresenceItem.PRESENCE_CHOICES = presence
 class OutputItemDto:
@@ -56,7 +57,7 @@ def details(request, sprint_id):
         # Convert it to DTO lists
         for presence in presences:
             print(presence)
-            outputItemPresences.append(OutputItemPresenceDto(presence.date, presence.presence))
+            outputItemPresences.append(OutputItemPresenceDto(presence.id, presence.date, presence.presence))
         outputItems.append(OutputItemDto(f'{capacity.person.name} {capacity.person.surname}', outputItemPresences))
 
     output = OutputDto(current_sprint.name, outputItems)
@@ -64,3 +65,28 @@ def details(request, sprint_id):
         'output': output,
     }
     return render(request, 'capacity/details.html', context)
+
+def update(request):
+    print(request)
+    if request.method == 'POST':
+        print("POST")
+        id = request.POST['id']
+        presence = request.POST['presence']
+        date = request.POST['date']
+        print(id)
+        print(presence)
+        print(date)
+        #TODO: Save data to DB
+        d: QuerySet[SprintCapacityPresenceItem] = SprintCapacityPresenceItem.objects.get(id=id)
+        print(d)
+        if(presence in SprintCapacityPresenceItem.PRESENCE_CHOICES[1]): # Yes
+            print("YYY")
+            print(SprintCapacityPresenceItem.PRESENCE_CHOICES[1][0])
+            d.presence = SprintCapacityPresenceItem.PRESENCE_CHOICES[1][0]
+        else: # No
+            print("XXX")
+            print(SprintCapacityPresenceItem.PRESENCE_CHOICES[0][0])
+            d.presence = SprintCapacityPresenceItem.PRESENCE_CHOICES[0][0]
+        print(d)
+        d.save()
+        return HttpResponse(status=201)

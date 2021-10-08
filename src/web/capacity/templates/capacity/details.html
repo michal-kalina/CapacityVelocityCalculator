@@ -17,11 +17,23 @@
             <tr>
                 <td>{{ item.person_name }}</td>
                 {% for d in item.data %}
-                    {% if d.presence != "Y" %}
-                    <td><i class="bi bi-person-check" style="font-size: 2rem;"></i></td>
-                    {% else %}
-                    <td><i class="bi bi-person-x" style="font-size: 2rem;"></i></td>
-                    {% endif %}
+                <td>
+                    <form id="presence-post" data-id="{{d.id}}" type="post">
+                        {% csrf_token %}
+                        <input name="id" type="hidden" value="{{ d.id }}" />
+                        {% if d.presence == "Y" %}
+                        <input name="presence" type="hidden" value="N" />
+                        {% else %}
+                        <input name="presence" type="hidden" value="Y" />
+                        {% endif %}
+                        <input name="date" type="hidden" value="{{ d.date|date:"Y-m-d" }}" />
+                        {% if d.presence == "Y" %}
+                        <i class="bi bi-person-check" style="font-size: 2rem;"></i>
+                        {% else %}
+                        <i class="bi bi-person-x" style="font-size: 2rem;"></i>
+                        {% endif %}
+                    </form>
+                </td>
                 {% endfor %}
             </tr>
             {% endfor %}
@@ -30,4 +42,27 @@
     {% else %}
     <p>No data is available.</p>
     {% endif %}
+{% endblock %}
+
+
+{% block script_section %}
+<script type="text/javascript">
+//post-form
+$(document).on('click', '#presence-post', function (event) {
+    // Make sure the page will not reload
+    //event.preventDefault();
+    const form = event.currentTarget;
+    const id = form.getAttribute("data-id");
+    const presence = Helpers.getFormInputValueByAttributeName(form, "presence")
+    const date = Helpers.getFormInputValueByAttributeName(form, "date")
+    const csrfmiddlewaretoken = Helpers.getFormInputValueByAttributeName(form, "csrfmiddlewaretoken")
+    const data = {
+        id: id,
+        presence: presence,
+        date: date,
+        csrfmiddlewaretoken: csrfmiddlewaretoken
+    };
+    Helpers.post('update/', data);
+});
+</script>
 {% endblock %}
