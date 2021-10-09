@@ -1,6 +1,7 @@
 from typing import Tuple
-from django.shortcuts import render
-from django.http import Http404, HttpResponse
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
+from django.http import Http404
 from django.db.models import QuerySet
 from .models import Person, SprintCapacity, Sprint, SprintCapacityPresenceItem
 
@@ -37,6 +38,7 @@ def index(request):
 
 # Create your views here.
 def details(request, sprint_id):
+    print(f'sprint id: {sprint_id}')
     outputItems: list[OutputItemDto] = list[OutputItemDto]()
     outputItemPresences: list[OutputItemPresenceDto] = None
     try:
@@ -69,24 +71,18 @@ def details(request, sprint_id):
 def update(request):
     print(request)
     if request.method == 'POST':
-        print("POST")
         id = request.POST['id']
         presence = request.POST['presence']
         date = request.POST['date']
-        print(id)
-        print(presence)
-        print(date)
-        #TODO: Save data to DB
-        d: QuerySet[SprintCapacityPresenceItem] = SprintCapacityPresenceItem.objects.get(id=id)
-        print(d)
-        if(presence in SprintCapacityPresenceItem.PRESENCE_CHOICES[1]): # Yes
-            print("YYY")
-            print(SprintCapacityPresenceItem.PRESENCE_CHOICES[1][0])
-            d.presence = SprintCapacityPresenceItem.PRESENCE_CHOICES[1][0]
-        else: # No
-            print("XXX")
-            print(SprintCapacityPresenceItem.PRESENCE_CHOICES[0][0])
-            d.presence = SprintCapacityPresenceItem.PRESENCE_CHOICES[0][0]
-        print(d)
-        d.save()
-        return HttpResponse(status=201)
+        try:
+            
+            presenceItem: QuerySet[SprintCapacityPresenceItem] = get_object_or_404(SprintCapacityPresenceItem, id=id)
+            if(presence in SprintCapacityPresenceItem.PRESENCE_CHOICES[0]): # Is in Yes tuple
+                presenceItem.presence = SprintCapacityPresenceItem.PRESENCE_CHOICES[1][0] # N
+            else: # Is in no tuple
+                presenceItem.presence = SprintCapacityPresenceItem.PRESENCE_CHOICES[0][0] # Y
+            presenceItem.save()
+            sprint_id = presenceItem.sprint_capacity.sprint.id
+            return redirect(reverse('capacity:details', kwargs={'sprint_id': sprint_id})) # We redirect to the same view
+        except SprintCapacityPresenceItem.DoesNotExist as e:
+            raise Http404(f"No SprintCapacityPresenceItem matches the given id: {id}.")

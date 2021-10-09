@@ -22,9 +22,9 @@
                         {% csrf_token %}
                         <input name="id" type="hidden" value="{{ d.id }}" />
                         {% if d.presence == "Y" %}
-                        <input name="presence" type="hidden" value="N" />
-                        {% else %}
                         <input name="presence" type="hidden" value="Y" />
+                        {% else %}
+                        <input name="presence" type="hidden" value="N" />
                         {% endif %}
                         <input name="date" type="hidden" value="{{ d.date|date:"Y-m-d" }}" />
                         {% if d.presence == "Y" %}
@@ -50,7 +50,7 @@
 //post-form
 $(document).on('click', '#presence-post', function (event) {
     // Make sure the page will not reload
-    //event.preventDefault();
+    event.preventDefault();
     const form = event.currentTarget;
     const id = form.getAttribute("data-id");
     const presence = Helpers.getFormInputValueByAttributeName(form, "presence")
