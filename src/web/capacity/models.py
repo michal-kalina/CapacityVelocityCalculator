@@ -1,21 +1,10 @@
 from django.db import models
 from datetime import timedelta, datetime
 
+from sprint.models import Sprint
+from person.models import Person
+
 # Create your models here.
-class Sprint(models.Model):
-    id = models.PositiveIntegerField(unique=True, primary_key=True)
-    name = models.CharField(max_length=120)
-
-    def __str__(self) -> str:
-        return self.name
-
-class Person(models.Model):
-    id = models.PositiveIntegerField(unique=True, primary_key=True)
-    name = models.CharField(max_length=120)
-    surname = models.CharField(max_length=120)
-
-    def __str__(self) -> str:
-        return f"{self.name} {self.surname}"
 
 class SprintCapacity(models.Model):
     id = models.PositiveIntegerField(unique=True, primary_key=True)

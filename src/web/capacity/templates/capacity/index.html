@@ -2,6 +2,8 @@
 
 {% block content %}
     {% if output %}
+    <p><b>Sprint list</b></p>
+    <a id="add" href="{% url 'sprint:add' %}" type="button" class="btn btn-primary">Add</a>
     <ul>
         {% for item in output %}
         <li><a href="{% url 'capacity:details' item.id %}">{{ item.name }}</a></li>

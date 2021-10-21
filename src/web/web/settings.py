@@ -32,6 +32,8 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'capacity.apps.CapacityConfig',
+    'sprint.apps.SprintConfig',
+    'person.apps.PersonConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

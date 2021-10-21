@@ -3,6 +3,7 @@
 {% block content %}
     {% if output %}
     <p>Sprint: {{ output.sprint_name }}</p>
+    <a id="go-back" href="{% url 'capacity:index' %}" type="button" class="btn btn-primary">Go Back</a>
     <table class="table table-striped table-hover">
         <thead>
             <tr>

@@ -12,10 +12,12 @@ class OutputItemPresenceDto:
         self.id: int = id
         self.date: datetime = date
         self.presence: SprintCapacityPresenceItem.PRESENCE_CHOICES = presence
+
 class OutputItemDto:
     def __init__(self, person_name: str, data: list[OutputItemPresenceDto]) -> None:
         self.person_name: str = person_name
         self.data: list[OutputItemPresenceDto] = data
+        
 class OutputStringDto:
     def __init__(self, id:str, name:str) -> None:
         self.id = id
@@ -78,9 +80,9 @@ def update(request):
             
             presenceItem: QuerySet[SprintCapacityPresenceItem] = get_object_or_404(SprintCapacityPresenceItem, id=id)
             if(presence in SprintCapacityPresenceItem.PRESENCE_CHOICES[0]): # Is in Yes tuple
-                presenceItem.presence = SprintCapacityPresenceItem.PRESENCE_CHOICES[1][0] # N
+                presenceItem.presence, _ = SprintCapacityPresenceItem.PRESENCE_CHOICES[1] # N
             else: # Is in no tuple
-                presenceItem.presence = SprintCapacityPresenceItem.PRESENCE_CHOICES[0][0] # Y
+                presenceItem.presence, _ = SprintCapacityPresenceItem.PRESENCE_CHOICES[0] # Y
             presenceItem.save()
             sprint_id = presenceItem.sprint_capacity.sprint.id
             return redirect(reverse('capacity:details', kwargs={'sprint_id': sprint_id})) # We redirect to the same view

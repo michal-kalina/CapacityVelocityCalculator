@@ -35,6 +35,11 @@ From root directory run command in terminal
 . build/runMigrate.sh
 ```
 
+# Add application
+```bash
+python manage.py startapp example
+```
+
 # Testing
 We are using [PyTest](https://docs.pytest.org/) framework for testing
 

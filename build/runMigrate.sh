@@ -12,6 +12,6 @@ echo "Activate venv"
 . venv/bin/activate
 echo "============================"
 echo "Create migration commit"
-python3 src/web/manage.py makemigrations capacity
+python3 src/web/manage.py makemigrations
 echo "Applay migration cmmmit on DB"
 python3 src/web/manage.py migrate

@@ -13,7 +13,7 @@ const Helpers = Object.create({
         });
     },
     success: function () {
-        window.location.reload();
+        setTimeout(function () { window.location.reload(); }, 100);
         console.log("success");
     },
     error: function (error) {
