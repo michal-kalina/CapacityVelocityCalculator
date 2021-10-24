@@ -1,0 +1,48 @@
+{% extends "main.html" %}
+
+{% block content %}
+    {% if output %}
+    <h1>List of sprints</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead
+        <tbody>
+        {% for item in output %}
+            <tr>
+                <td>{{ item.name }}</td>
+                <td><a href="{% url 'sprint:detail'  item.id  %}"><i class="bi bi-eye" style="font-size: 1rem;"></a></td>
+                <td><a href="{% url 'sprint:update' item.id %}"><i class="bi bi-pencil" style="font-size: 1rem;"></i></a></td>
+                <td><a href="{% url 'sprint:delete' item.id %}"><i class="bi bi-x-lg" style="font-size: 1rem;"></i></a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ page_obj.number }} of {{ paginator.num_pages }}.
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+    {% else %}
+    <p>No data is available.</p>
+    {% endif %}
+{% endblock %}

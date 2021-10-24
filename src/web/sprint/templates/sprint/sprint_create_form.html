@@ -1,0 +1,15 @@
+{% extends "main.html" %}
+
+{% block content %}
+    {% if output %}
+    <h1>Create sprint"</h1>
+    <form  method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <a href="{% url 'sprint:sprints' %}" type="button" class="btn btn-primary">Cancle <i class="bi bi-reply" style="font-size: 1rem;"></i></a>
+        <input type="submit" class="btn btn-primary" value="Save"/>
+    </form>
+    {% else %}
+    <p>No data is available.</p>
+    {% endif %}
+{% endblock %}
