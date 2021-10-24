@@ -2,9 +2,9 @@
 
 {% block content %}
     {% if output %}
-    <h1>List of sprints</h1>
-    <a id="add" href="{% url 'sprint:create' %}" type="button" class="btn btn-primary">Create new <i class="bi bi-plus-circle" style="font-size: 1rem;"></i></a>
-    <a href="{% url 'person:persons' %}" type="button" class="btn btn-primary">Show person list <i class="bi bi-plus-circle" style="font-size: 1rem;"></i></a>
+    <h1>List of persons</h1>
+    <a href="{% url 'sprint:sprints' %}" type="button" class="btn btn-primary">Go back to sprint list <i class="bi bi-reply" style="font-size: 1rem;"></i></a>
+    <a id="add" href="{% url 'person:create' %}" type="button" class="btn btn-primary">Create new <i class="bi bi-plus-circle" style="font-size: 1rem;"></i></a>
     <table>
         <thead>
             <tr>
@@ -17,10 +17,10 @@
         <tbody>
         {% for item in output %}
             <tr>
-                <td><a href="{% url 'capacity:detail' item.id  %}">{{ item.name }}</a></td>
-                <td><a href="{% url 'sprint:detail' item.id  %}"><i class="bi bi-eye" style="font-size: 1rem;"></a></td>
-                <td><a href="{% url 'sprint:update' item.id %}"><i class="bi bi-pencil" style="font-size: 1rem;"></i></a></td>
-                <td><a href="{% url 'sprint:delete' item.id %}"><i class="bi bi-x-lg" style="font-size: 1rem;"></i></a></td>
+                <td>{{ item.name }} {{ item.surname }}</td>
+                <td><a href="{% url 'person:detail' item.id  %}"><i class="bi bi-eye" style="font-size: 1rem;"></a></td>
+                <td><a href="{% url 'person:update' item.id %}"><i class="bi bi-pencil" style="font-size: 1rem;"></i></a></td>
+                <td><a href="{% url 'person:delete' item.id %}"><i class="bi bi-x-lg" style="font-size: 1rem;"></i></a></td>
             </tr>
         {% endfor %}
         </tbody>

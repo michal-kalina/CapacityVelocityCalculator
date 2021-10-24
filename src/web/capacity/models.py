@@ -7,7 +7,7 @@ from person.models import Person
 # Create your models here.
 
 class SprintCapacity(models.Model):
-    id = models.PositiveIntegerField(unique=True, primary_key=True)
+    id = models.BigAutoField(unique=True, primary_key=True)
     sprint = models.ForeignKey(Sprint, on_delete=models.CASCADE, null=True, default=None, related_name='sprint_capacity')
     person = models.ForeignKey(Person, on_delete=models.CASCADE, null=True, default=None, related_name='sprint_capacity')
     velocity = models.PositiveIntegerField()
@@ -21,7 +21,7 @@ class SprintCapacityPresenceItem(models.Model):
         ('Y', 'Yes'),
         ('N', 'No')
     )
-    id = models.PositiveIntegerField(unique=True, primary_key=True)
+    id = models.BigAutoField(unique=True, primary_key=True)
     sprint_capacity = models.ForeignKey(SprintCapacity, on_delete=models.CASCADE, null=True, default=None, related_name='sprint_capacity_presence')
     date = models.DateTimeField()
     presence = models.CharField(max_length=1, choices=PRESENCE_CHOICES)

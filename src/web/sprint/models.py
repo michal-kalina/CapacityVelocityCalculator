@@ -3,7 +3,7 @@ from django.urls import reverse
 
 # Create your models here.
 class Sprint(models.Model):
-    id = models.PositiveIntegerField(unique=True, primary_key=True)
+    id = models.BigAutoField(unique=True, primary_key=True)
     name = models.CharField(max_length=120)
 
     def get_absolute_url(self):

@@ -17,7 +17,7 @@ class OutputItemDto:
     def __init__(self, person_name: str, data: list[OutputItemPresenceDto]) -> None:
         self.person_name: str = person_name
         self.data: list[OutputItemPresenceDto] = data
-        
+
 class OutputStringDto:
     def __init__(self, id:str, name:str) -> None:
         self.id = id
@@ -68,7 +68,7 @@ def details(request, sprint_id):
     context = {
         'output': output,
     }
-    return render(request, 'capacity/details.html', context)
+    return render(request, 'capacity/detail.html', context)
 
 def update(request):
     print(request)
@@ -85,6 +85,6 @@ def update(request):
                 presenceItem.presence, _ = SprintCapacityPresenceItem.PRESENCE_CHOICES[0] # Y
             presenceItem.save()
             sprint_id = presenceItem.sprint_capacity.sprint.id
-            return redirect(reverse('capacity:details', kwargs={'sprint_id': sprint_id})) # We redirect to the same view
+            return redirect(reverse('capacity:detail', kwargs={'sprint_id': sprint_id})) # We redirect to the same view
         except SprintCapacityPresenceItem.DoesNotExist as e:
             raise Http404(f"No SprintCapacityPresenceItem matches the given id: {id}.")

@@ -1,0 +1,15 @@
+{% extends "main.html" %}
+
+{% block content %}
+    {% if output %}
+    <h1>Delete person "{{ output.name }}"?</h1>
+    <form  method="post">
+        {% csrf_token %}
+        Are you sure you want to delete this item?<br />
+        <a href="{% url 'person:persons' %}" type="button" class="btn btn-primary">Cancle <i class="bi bi-reply" style="font-size: 1rem;"></i></a>
+        <input type="submit" class="btn btn-primary" value="Delete"/>
+    </form>
+    {% else %}
+    <p>No data is available.</p>
+    {% endif %}
+{% endblock %}
