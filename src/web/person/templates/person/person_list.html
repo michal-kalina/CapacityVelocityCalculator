@@ -2,23 +2,23 @@
 
 {% block content %}
     {% if output %}
-    <h1>List of persons</h1>
+    <caption>List of persons</caption><br />
     <a href="{% url 'sprint:sprints' %}" type="button" class="btn btn-primary">Go back to sprint list <i class="bi bi-reply" style="font-size: 1rem;"></i></a>
     <a id="add" href="{% url 'person:create' %}" type="button" class="btn btn-primary">Create new <i class="bi bi-plus-circle" style="font-size: 1rem;"></i></a>
-    <table>
-        <thead>
+    <table class="table table-striped table-hover">
+        <thead class="table-light">
             <tr>
-                <th>Name</th>
-                <th></th>
-                <th></th>
-                <th></th>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col" style="width:5%"></th>
+                <th scope="col" style="width:5%"></th>
             </tr>
-        </thead
+        </thead>
         <tbody>
         {% for item in output %}
             <tr>
-                <td>{{ item.name }} {{ item.surname }}</td>
-                <td><a href="{% url 'person:detail' item.id  %}"><i class="bi bi-eye" style="font-size: 1rem;"></a></td>
+                <th scope="row">{{ item.id }}</th>
+                <td><a href="{% url 'person:detail' item.id  %}">{{ item.name }} {{ item.surname }}</a></td>
                 <td><a href="{% url 'person:update' item.id %}"><i class="bi bi-pencil" style="font-size: 1rem;"></i></a></td>
                 <td><a href="{% url 'person:delete' item.id %}"><i class="bi bi-x-lg" style="font-size: 1rem;"></i></a></td>
             </tr>
@@ -26,8 +26,8 @@
         </tbody>
     </table>
 
-    <div class="pagination">
-        <span class="step-links">
+    <div class="d-flex justify-content-center">
+        <div class="align-middle">
             {% if page_obj.has_previous %}
                 <a href="?page=1">&laquo; first</a>
                 <a href="?page={{ page_obj.previous_page_number }}">previous</a>
@@ -41,7 +41,7 @@
                 <a href="?page={{ page_obj.next_page_number }}">next</a>
             <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
             {% endif %}
-        </span>
+        </div>
     </div>
     {% else %}
     <p>No data is available.</p>

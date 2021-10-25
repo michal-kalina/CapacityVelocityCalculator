@@ -2,10 +2,11 @@
 
 {% block content %}
     {% if output %}
-    <h1>Sprint details</h1>
+    <h1>Person details</h1>
     <a href="{% url 'person:persons' %}" type="button" class="btn btn-primary">Show person list <i class="bi bi-list" style="font-size: 1rem;"></i></a>
     <a href="{% url 'person:update' output.id %}" type="button" class="btn btn-primary">Edit <i class="bi bi-pencil" style="font-size: 1rem;"></i></a>
     <p>Name: {{ output.name }}</p>
+    <p>Surname: {{ output.surname }}</p>
     {% else %}
     <p>No data is available.</p>
     {% endif %}
