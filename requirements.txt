@@ -4,3 +4,5 @@ pytest
 pytest-lazy-fixture
 coverage
 Django
+django-crispy-forms
+crispy-bootstrap5

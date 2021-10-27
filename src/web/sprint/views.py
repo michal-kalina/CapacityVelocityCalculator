@@ -23,13 +23,13 @@ class SprintDetailView(DetailView):
 class SprintCreateView(CreateView): 
     model = Sprint
     context_object_name = 'output'
-    fields = ['name']
+    fields = ['name', 'from_date', 'to_date']
     template_name_suffix = '_create_form'
 
 class SprintUpdateView(UpdateView): 
     model = Sprint
     context_object_name = 'output'
-    fields = ['name']
+    fields = ['name', 'from_date', 'to_date']
     template_name_suffix = '_update_form'
 
 class SprintDeleteView(DeleteView): 

@@ -1,11 +1,13 @@
 {% extends "main.html" %}
 
+{% load crispy_forms_tags %}
+
 {% block content %}
     {% if output %}
     <h1>Update sprint</h1>
     <form  method="post">
         {% csrf_token %}
-        {{ form.as_p }}
+        {{ form|crispy }}
         <a href="{% url 'sprint:sprints' %}" type="button" class="btn btn-primary">Cancle <i class="bi bi-reply" style="font-size: 1rem;"></i></a>
         <input type="submit" class="btn btn-primary" value="Update"/>
     </form>
