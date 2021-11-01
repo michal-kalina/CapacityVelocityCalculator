@@ -91,6 +91,13 @@ black .
 [CRUD](https://docs.djangoproject.com/en/3.2/ref/class-based-views/generic-editing/)
 [CRUD](https://efficientcoder.net/django-crud-generic-views-tutorial/)
 
+### Crispy-Forms
+[Crispy forms](https://django-crispy-forms.readthedocs.io/en/latest/install.html)
+[Crispy with Bootstrap5](https://github.com/django-crispy-forms/crispy-bootstrap5)
+
+### Navbar
+[How to make manu](https://www.selimatmaca.com/211-base-template/)
+
 # Useful stuff
 * [How to clear screen in terminal](https://stackoverflow.com/a/5367075)
 ```

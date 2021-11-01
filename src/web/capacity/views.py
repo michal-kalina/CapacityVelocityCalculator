@@ -1,32 +1,71 @@
-from typing import Tuple
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.http import Http404
 from django.db.models import QuerySet
+from django.views.generic import ListView, DetailView 
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
 from .models import Person, SprintCapacity, Sprint, SprintCapacityPresenceItem
+from .dtos import OutputDto, OutputItemDto, OutputItemPresenceDto, OutputStringDto
 
-from datetime import datetime
 
-class OutputItemPresenceDto:
-    def __init__(self, id:int, date: datetime, presence: SprintCapacityPresenceItem.PRESENCE_CHOICES) -> None:
-        self.id: int = id
-        self.date: datetime = date
-        self.presence: SprintCapacityPresenceItem.PRESENCE_CHOICES = presence
 
-class OutputItemDto:
-    def __init__(self, person_name: str, data: list[OutputItemPresenceDto]) -> None:
-        self.person_name: str = person_name
-        self.data: list[OutputItemPresenceDto] = data
+class SprintCapacityDetailView(DetailView):
+    model = Sprint
+    template_name = 'capacity/sprintcapacity_detail.html'
+    context_object_name = 'output'
+    pk_url_kwarg = 'sprint_id'
+    
+    def get_context_data(self, **kwargs):
+        context = super(SprintCapacityDetailView, self).get_context_data(**kwargs)
+        sprint_id = self.kwargs['sprint_id']
+        output = OutputDto(sprint_id)
+        context['output'] = output
+        return context
 
-class OutputStringDto:
-    def __init__(self, id:str, name:str) -> None:
-        self.id = id
-        self.name = name
+class SprintCapacityCreateView(CreateView): 
+    model = SprintCapacity
+    context_object_name = 'output'
+    fields = ['name', 'surname']
+    template_name_suffix = '_create_form'
 
-class OutputDto:
-    def __init__(self, sprint_name: str, items: list[OutputItemDto]) -> None:
-        self.sprint_name: str = sprint_name
-        self.items: list[OutputItemDto] = items
+class SprintCapacityUpdateView(UpdateView): 
+    model = Sprint
+    template_name = 'capacity/sprintcapacity_update_form.html'
+    context_object_name = 'output'
+    pk_url_kwarg = 'sprint_id'
+    success_url = reverse_lazy('capacity:current')
+
+    def get_object(self):
+        try:
+            obj: QuerySet[SprintCapacity] = SprintCapacity.objects.filter(sprint__id=self.kwargs['sprint_id'])
+        except SprintCapacity.DoesNotExist:
+            obj: QuerySet[SprintCapacity] = []
+        return obj
+    
+    def get_persones(self):
+        try:
+            obj: QuerySet[Person] = Person.objects.all()
+        except Person.DoesNotExist:
+            obj: QuerySet[Person] = []
+        return obj
+
+    def get_context_data(self, **kwargs):
+        context = super(SprintCapacityUpdateView, self).get_context_data(**kwargs)
+        sprint_id = self.kwargs['sprint_id']
+        objects = self.get_object()
+        items = []
+        for item in objects:
+            kwargs['object'][items] = self.get_object()
+            kwargs['object'] = self.get_persones().exclude()
+
+        kwargs['output']['items'] = items
+        return context
+
+class SprintCapacityDeleteView(DeleteView): 
+    model = SprintCapacity
+    context_object_name = 'output'
+    success_url = reverse_lazy('capacity:current')
 
 def index(request):
     last_five_sprints: QuerySet[Sprint] = Sprint.objects.order_by("-id")[:5]
@@ -38,40 +77,12 @@ def index(request):
     }
     return render(request, 'capacity/index.html', context)
 
-# Create your views here.
-def details(request, sprint_id):
-    print(f'sprint id: {sprint_id}')
-    outputItems: list[OutputItemDto] = list[OutputItemDto]()
-    outputItemPresences: list[OutputItemPresenceDto] = None
-    try:
-        current_sprint: QuerySet[Sprint] = Sprint.objects.get(id=sprint_id)
-    except Sprint.DoesNotExist:
-        raise Http404("No sprint has been defined")
-    current_sprint_capacities: QuerySet[SprintCapacity] = SprintCapacity.objects.filter(sprint__id=current_sprint.id)
-
-    for capacity in current_sprint_capacities:
-        print(capacity)
-        # Init arrays
-        outputItemPresences: list[OutputItemPresenceDto] = list[OutputItemPresenceDto]()
-
-        # Get person and its presences
-        #person: QuerySet[Person] = Person.objects.get(id=capacity.person.id)
-        presences: QuerySet[SprintCapacityPresenceItem] = SprintCapacityPresenceItem.objects.filter(sprint_capacity__id=capacity.id).order_by('date')
-
-        # Convert it to DTO lists
-        for presence in presences:
-            print(presence)
-            outputItemPresences.append(OutputItemPresenceDto(presence.id, presence.date, presence.presence))
-        outputItems.append(OutputItemDto(f'{capacity.person.name} {capacity.person.surname}', outputItemPresences))
-
-    output = OutputDto(current_sprint.name, outputItems)
-    context = {
-        'output': output,
-    }
-    return render(request, 'capacity/detail.html', context)
+def current(request):
+    current_sprint: QuerySet[Sprint] = Sprint.objects.latest('-id')
+    print(current_sprint)
+    return redirect(reverse('capacity:details', kwargs={'sprint_id': current_sprint.id})) # We redirect to the same view
 
 def update(request):
-    print(request)
     if request.method == 'POST':
         id = request.POST['id']
         presence = request.POST['presence']
@@ -85,6 +96,6 @@ def update(request):
                 presenceItem.presence, _ = SprintCapacityPresenceItem.PRESENCE_CHOICES[0] # Y
             presenceItem.save()
             sprint_id = presenceItem.sprint_capacity.sprint.id
-            return redirect(reverse('capacity:detail', kwargs={'sprint_id': sprint_id})) # We redirect to the same view
+            return redirect(reverse('capacity:details', kwargs={'sprint_id': sprint_id})) # We redirect to the same view
         except SprintCapacityPresenceItem.DoesNotExist as e:
             raise Http404(f"No SprintCapacityPresenceItem matches the given id: {id}.")
