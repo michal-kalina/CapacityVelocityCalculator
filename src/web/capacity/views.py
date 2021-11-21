@@ -11,6 +11,7 @@ from .models import Person, SprintCapacity, Sprint, SprintCapacityPresenceItem
 from .dtos import OutputDto
 from .forms import SprintCapacityUpdatePersonForm
 from django.forms import formset_factory
+from django.forms.formsets import DELETION_FIELD_NAME
 from django.db import IntegrityError, transaction
 
 
@@ -50,6 +51,7 @@ class SprintCapacityUpdateView(DetailView):
         return render(request, self.template_name, self.get_context_data(**kwargs))
 
     def post(self, request, *args, **kwargs):
+        print(request.POST)
         formset = self.get_formset(request.POST)
 
         if formset.is_valid():
@@ -59,21 +61,30 @@ class SprintCapacityUpdateView(DetailView):
 
     def get_formset(self, data: dict):
         """Return an instance of the form to be used in this view."""
-        SprintCapacityUpdatePersonFormset = formset_factory(SprintCapacityUpdatePersonForm)
+        SprintCapacityUpdatePersonFormset = formset_factory(SprintCapacityUpdatePersonForm, can_delete=True)
         return SprintCapacityUpdatePersonFormset(data=data)
 
     def form_valid(self, formset):
         """If the form is valid, redirect to the supplied URL."""
-
         try:
             with transaction.atomic():
+                for form in formset.deleted_forms:
+                    print(form.cleaned_data)
+                    capacity_to_delete: SprintCapacity = SprintCapacity.objects.get(id=form.cleaned_data.get('id'))
+                    print(capacity_to_delete)
+                    capacity_to_delete.delete()
+                
                 for form in formset.forms:
+                    # Change only forms that were not deleted
+                    if form.has_changed() and not form.cleaned_data.get(DELETION_FIELD_NAME):
                     # TODO: Handle 0 id for person
-                    person: Person = Person.objects.get(id=form.cleaned_data.get('persons').id)
-                    capacity: SprintCapacity = SprintCapacity.objects.get(id=form.cleaned_data.get('id'))
-                    capacity.person = person
-                    capacity.save()
-        except IntegrityError: #If the transaction failed
+                        person: Person = Person.objects.get(id=form.cleaned_data.get('persons').id)
+                        capacity: SprintCapacity = SprintCapacity.objects.get(id=form.cleaned_data.get('id'))
+                        capacity.person = person
+                        capacity.save()
+
+        except IntegrityError as ex: #If the transaction failed
+            print(ex)
             # messages.error(request, 'There was an error saving your profile.')
             return self.render_to_response(self.get_context_data(formset=formset))
         except SprintCapacity.DoesNotExist as ex:

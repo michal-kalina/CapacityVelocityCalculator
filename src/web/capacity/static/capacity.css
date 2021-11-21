@@ -1,0 +1,7 @@
+td #checkbox-delete > input[type=checkbox] {
+    display: none;
+  }
+  
+  tr #checkbox-delete{
+    cursor: pointer;
+  }

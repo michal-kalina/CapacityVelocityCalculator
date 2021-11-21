@@ -1,5 +1,10 @@
 {% extends "main.html" %}
+{% load static %}
 {% load capacity_extras %}
+
+{% block css_section %}
+<link href="{% static 'capacity.css' %}" rel="stylesheet">
+{% endblock %}
 
 {% block content %}
     {% if object %}
@@ -12,23 +17,40 @@
                     {% for d in object.items.0.data %}
                     <th>{{ d.date|date:"Y-m-d" }}</th>
                     {% endfor %}
+                    {% if formset.can_delete %}
+                    <th>Remove</th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
-                {% for item in object.items %}
+                {% for form in formset %}
+                {% comment %} <tr class="link-formset"> {% endcomment %}
                 <tr>
                     <td>
-                        {{ formset|index_of:forloop.counter0 }}
+                        {{ form.id }} {% comment %} Hidden {% endcomment %}
+                        {{ form.sprint_id }} {% comment %} Hidden {% endcomment %}
+                        {{ form.persons }}
                     </td>
-                    {% for d in item.data %}
+                    {% with item=object.items|index_of:forloop.counter0 %}
+                        {% for d in item.data %}
+                        <td>
+                            {% if d.presence == "Y" %}
+                            <i class="bi bi-person-check" style="font-size: 2rem;"></i>
+                            {% else %}
+                            <i class="bi bi-person-x" style="font-size: 2rem;"></i>
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                    {% endwith %}
+                    {% if formset.can_delete %}
+                    {% comment %} <td>{{ form.DELETE }} </td> {% endcomment %}
                     <td>
-                        {% if d.presence == "Y" %}
-                        <i class="bi bi-person-check" style="font-size: 2rem;"></i>
-                        {% else %}
-                        <i class="bi bi-person-x" style="font-size: 2rem;"></i>
-                        {% endif %}
+                        <label id="checkbox-delete">
+                            <input type="checkbox" name="form-{{ forloop.counter0 }}-DELETE" id="id_form-{{ forloop.counter0 }}-DELETE" />
+                            <i class="bi bi-trash" style="font-size: 2rem;"></i>
+                        </label>
                     </td>
-                    {% endfor %}
+                    {% endif %}
                 </tr>
                 {% endfor %}
             </tbody>
@@ -42,4 +64,26 @@
     {% else %}
     <p>No data is available.</p>
     {% endif %}
+{% endblock %}
+
+
+{% block script_section %}
+{% comment %} <script src="{% static 'jquery.formset.js' %}"></script> {% endcomment %}
+<script type="text/javascript">
+{% comment %} $('.link-formset').formset({
+    addText: 'add link',
+    deleteText: 'remove'
+}); {% endcomment %}
+// Hanlde check delete button
+$("tr #checkbox-delete > input[type=checkbox]").change(function() {
+    const checkbox = $(this);
+    const icon = checkbox.siblings("[class*=bi-trash]");
+    const checked = checkbox.is(":checked");
+    checkbox.val(checked ? 'on' : '');
+    icon
+        .toggleClass('bi-trash-fill', checked)
+        .toggleClass('bi-trash', !checked);
+});
+
+</script>
 {% endblock %}
