@@ -95,6 +95,14 @@ black .
 [Crispy forms](https://django-crispy-forms.readthedocs.io/en/latest/install.html)
 [Crispy with Bootstrap5](https://github.com/django-crispy-forms/crispy-bootstrap5)
 
+### Formset
+[Formset](https://docs.djangoproject.com/en/3.2/topics/forms/formsets/)
+[Formset JS](https://github.com/elo80ka/django-dynamic-formset)
+[Formset pass custom parameter](https://stackoverflow.com/questions/622982/django-passing-custom-form-parameters-to-formset)
+
+### Custom template tags
+[Custome template tag](https://docs.djangoproject.com/en/dev/howto/custom-template-tags/)
+
 ### Navbar
 [How to make manu](https://www.selimatmaca.com/211-base-template/)
 

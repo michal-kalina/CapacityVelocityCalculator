@@ -4,11 +4,14 @@ from .models import Person
 class SprintCapacityUpdatePersonForm(forms.Form):
     id = forms.IntegerField(widget=forms.HiddenInput()) 
     sprint_id = forms.IntegerField(widget=forms.HiddenInput())
-    persons = forms.ModelChoiceField(widget = forms.Select(), queryset=Person.objects.all(), required = True)
+    persons = forms.ModelChoiceField(widget = forms.Select(), queryset=Person.objects.all(), required = True, label="")
 
-    def __init__(self, id, sprint_id, choices_initial, choices):
-        super(SprintCapacityUpdatePersonForm, self).__init__()
-        self.fields['id'].initial = id
-        self.fields['sprint_id'].initial = sprint_id
-        self.fields['persons'].initial = choices_initial
-        self.fields['persons'].choices = choices
+    def as_table(self):
+        "Return this form rendered as HTML."
+        return self._html_output(
+            normal_row='<div>%(errors)s%(field)s%(help_text)s</div>',
+            error_row='<div>%s</div>',
+            row_ender='</div>',
+            help_text_html='<br><span class="helptext">%s</span>',
+            errors_on_separate_row=False,
+        )
