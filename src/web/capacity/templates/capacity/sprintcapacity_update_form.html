@@ -43,7 +43,6 @@
                         {% endfor %}
                     {% endwith %}
                     {% if formset.can_delete %}
-                    {% comment %} <td>{{ form.DELETE }} </td> {% endcomment %}
                     <td>
                         <label id="checkbox-delete">
                             <input type="checkbox" name="form-{{ forloop.counter0 }}-DELETE" id="id_form-{{ forloop.counter0 }}-DELETE" />
@@ -58,7 +57,8 @@
         <p>
             {{ formset.management_form }}
             {% csrf_token %}
-            <input type="submit" value="Submit" />
+            <input type="submit" value="Add new item" class="btn btn-primary"/>
+            <input type="submit" value="Save" class="btn btn-primary"/>
         </p>
     </form>
     {% else %}
@@ -75,15 +75,21 @@
     deleteText: 'remove'
 }); {% endcomment %}
 // Hanlde check delete button
-$("tr #checkbox-delete > input[type=checkbox]").change(function() {
-    const checkbox = $(this);
-    const icon = checkbox.siblings("[class*=bi-trash]");
-    const checked = checkbox.is(":checked");
-    checkbox.val(checked ? 'on' : '');
-    icon
-        .toggleClass('bi-trash-fill', checked)
-        .toggleClass('bi-trash', !checked);
-});
+function addNewRow() {
+
+}
+function toggleDeleteItem() {
+    $("tr #checkbox-delete > input[type=checkbox]").change(function() {
+        const checkbox = $(this);
+        const icon = checkbox.siblings("[class*=bi-trash]");
+        const checked = checkbox.is(":checked");
+        checkbox.val(checked ? 'on' : '');
+        icon
+            .toggleClass('bi-trash-fill', checked)
+            .toggleClass('bi-trash', !checked);
+    });
+}
+toggleDeleteItem();
 
 </script>
 {% endblock %}

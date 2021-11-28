@@ -1,3 +1,4 @@
+from django.forms import formsets
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.http import Http404, HttpResponseRedirect
@@ -8,8 +9,8 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormMi
 from django.views.generic import View
 from django.urls import reverse_lazy
 from .models import Person, SprintCapacity, Sprint, SprintCapacityPresenceItem
-from .dtos import OutputDto
-from .forms import SprintCapacityUpdatePersonForm
+from .dtos import OutputDto, OutputItemDto
+from .forms import SprintCapacityUpdatePersonFormset, ADD_NEW_RAW
 from django.forms import formset_factory
 from django.forms.formsets import DELETION_FIELD_NAME
 from django.db import IntegrityError, transaction
@@ -54,14 +55,13 @@ class SprintCapacityUpdateView(DetailView):
         print(request.POST)
         formset = self.get_formset(request.POST)
 
-        if formset.is_valid():
+        if formset.is_valid() and formset.management_form.cleaned_data.get(ADD_NEW_RAW) == 0:
             return self.form_valid(formset)
         else:
             return self.form_invalid(formset)    
 
     def get_formset(self, data: dict):
         """Return an instance of the form to be used in this view."""
-        SprintCapacityUpdatePersonFormset = formset_factory(SprintCapacityUpdatePersonForm, can_delete=True)
         return SprintCapacityUpdatePersonFormset(data=data)
 
     def form_valid(self, formset):
@@ -69,19 +69,22 @@ class SprintCapacityUpdateView(DetailView):
         try:
             with transaction.atomic():
                 for form in formset.deleted_forms:
-                    print(form.cleaned_data)
                     capacity_to_delete: SprintCapacity = SprintCapacity.objects.get(id=form.cleaned_data.get('id'))
-                    print(capacity_to_delete)
                     capacity_to_delete.delete()
                 
                 for form in formset.forms:
-                    # Change only forms that were not deleted
-                    if form.has_changed() and not form.cleaned_data.get(DELETION_FIELD_NAME):
-                    # TODO: Handle 0 id for person
-                        person: Person = Person.objects.get(id=form.cleaned_data.get('persons').id)
-                        capacity: SprintCapacity = SprintCapacity.objects.get(id=form.cleaned_data.get('id'))
-                        capacity.person = person
-                        capacity.save()
+                    # Change only forms that were not deleted an were changed
+                    if form.has_changed() and not form.cleaned_data.get(DELETION_FIELD_NAME) and not form.cleaned_data.get('ADD'):
+                        # Update person in sprint capacity only if user selected it from list
+                        if form.cleaned_data.get('persons').id > 0:
+                            person: Person = Person.objects.get(id=form.cleaned_data.get('persons').id)
+                            capacity: SprintCapacity = SprintCapacity.objects.get(id=form.cleaned_data.get('id'))
+                            capacity.person = person
+                            capacity.save()
+
+                    # Add new sprint capacity
+                    if form.has_changed() and form.cleaned_data.get(ADD_NEW_RAW):
+                        pass
 
         except IntegrityError as ex: #If the transaction failed
             print(ex)
@@ -96,25 +99,56 @@ class SprintCapacityUpdateView(DetailView):
 
     def form_invalid(self, formset):
         """If the form is invalid, render the invalid form."""
-        return self.render_to_response(self.get_context_data(formset=formset))
+        self.object = self.get_object()
+        return self.render_to_response(self.get_context_data(**dict(formset=formset, object=self.object)))
 
     def get_context_data(self, **kwargs):
-        object = self.get_object()
+        print('get_context_data')
+        print(kwargs)
+        # object = self.get_object()
         # initialize formset data
-        data = {
-            'form-TOTAL_FORMS': f'{len(object.items)}',
-            'form-INITIAL_FORMS': f'{len(object.items)}'
-        }
-        # initialize formset forms with data
-        for i in range(0, len(object.items)):
+        if('formset' in kwargs):
+            print('formset')
+            tmpFormset = kwargs['formset']
+            tmpObject = kwargs['object']
+            print(tmpObject)
+            data = tmpFormset.data.dict()
+            addNewRows = int(data['form-ADD_NEW_RAW'])
             data.update({
-                f'form-{i}-id': object.items[i].id,
-                f'form-{i}-sprint_id': object.sprint_id,
-                f'form-{i}-persons': object.items[i].person_id,
+                'form-ADD_NEW_RAW': f'{addNewRows + 1}',
+                'form-TOTAL_FORMS': f'{len(self.object.items) + addNewRows}',
             })
-        formset = self.get_formset(data)
+            for r in range(0, addNewRows):
+                keyPerson = f'form-{len(tmpObject.items) + r}-persons'
+                data.update({
+                    f'form-{len(tmpObject.items) + r}-id': '0',
+                    f'form-{len(tmpObject.items) + r}-sprint_id': self.object.sprint_id,
+                    keyPerson: data[keyPerson] if keyPerson in data else '0' 
+                })
+                tmpObject.items.append(OutputItemDto(0, 0, '<unknown>', self.object.items[0].data))
+
+            formset = self.get_formset(data)
+
+            print(data)
+            self.object = tmpObject
+        else:
+            data = {
+                'form-TOTAL_FORMS': f'{len(self.object.items)}',
+                'form-INITIAL_FORMS': f'{len(self.object.items)}',
+                'form-ADD_NEW_RAW': '1'
+            }
+            # initialize formset forms with data
+            for i in range(0, len(self.object.items)):
+                data.update({
+                    f'form-{i}-id': self.object.items[i].id,
+                    f'form-{i}-sprint_id': self.object.sprint_id,
+                    f'form-{i}-persons': self.object.items[i].person_id,
+                })
+            formset = self.get_formset(data)
+
+        #print(formset)
         context = super(SprintCapacityUpdateView, self).get_context_data(**kwargs)
-        context['object'] = object
+        context['object'] = self.object
         context['formset'] = formset
         return context
 

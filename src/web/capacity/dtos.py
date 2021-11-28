@@ -14,7 +14,13 @@ class OutputItemDto:
         self.id: int = id
         self.person_id: int = person_id
         self.person_name: str = person_name
-        self.data: list[OutputItemPresenceDto] = data
+        self.data: list[OutputItemPresenceDto] = data if data is not None else list()
+
+    def __str__(self) -> str:
+        s = ""
+        for d in self.data:
+            s += f"{d.date} "
+        return f"<{self.id} {self.person_id}, {self.person_name} data: [{s}]>"
 
 class OutputDto:
     def __init__(self, sprint_id: int) -> None:
@@ -22,6 +28,12 @@ class OutputDto:
         self.sprint_name: str = ''
         self.items: list[OutputItemDto] = list[OutputItemDto]()
         self.get_data(sprint_id)
+    
+    def __str__(self) -> str:
+        s = ""
+        for i in self.items:
+            s += f"{i} "
+        return f"<{self.sprint_id} {self.sprint_name}, items: [{s}]>"
 
     def get_data(self, sprint_id) -> None:
         try:
