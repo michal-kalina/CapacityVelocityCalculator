@@ -21,14 +21,20 @@ class SprintCapacityUpdatePersonForm(forms.Form):
         )
 
 # special field names
-ADD_NEW_RAW = 'ADD_NEW_RAW'
+ADD_NEW_RAW = 'ADD'
+ADD_NEW_RAW_COUNTER = 'ADD_COUNTER'
+REMOVE_RAWS = 'DELETE'
 
 # default value indicating that no new line was added to formset
 DEFAULT_ADD_NEW_RAW = 0
+DEFAULT_ADD_NEW_RAW_COUNTER = 0
+DEFAULT_REMOVE_RAWS = 0
 
 class SprintCapacityUpdatePersonManagementForm(ManagementForm):
     def __init__(self, *args, **kwargs):
         self.base_fields[ADD_NEW_RAW] = IntegerField(widget=HiddenInput)
+        self.base_fields[ADD_NEW_RAW_COUNTER] = IntegerField(widget=HiddenInput)
+        self.base_fields[REMOVE_RAWS] = IntegerField(widget=HiddenInput)
         super().__init__(*args, **kwargs)
 
     def clean(self):
@@ -36,6 +42,8 @@ class SprintCapacityUpdatePersonManagementForm(ManagementForm):
         # When the management form is invalid, we don't know if new raw
         # was added.
         cleaned_data.setdefault(ADD_NEW_RAW, DEFAULT_ADD_NEW_RAW)
+        cleaned_data.setdefault(ADD_NEW_RAW_COUNTER, DEFAULT_ADD_NEW_RAW_COUNTER)
+        cleaned_data.setdefault(REMOVE_RAWS, DEFAULT_REMOVE_RAWS)
         return cleaned_data
 
 class SprintCapacityUpdatePersonFormset(BaseFormSet):
@@ -64,6 +72,8 @@ class SprintCapacityUpdatePersonFormset(BaseFormSet):
                 INITIAL_FORM_COUNT: self.initial_form_count(),
                 MIN_NUM_FORM_COUNT: self.min_num,
                 MAX_NUM_FORM_COUNT: self.max_num,
-                ADD_NEW_RAW: DEFAULT_ADD_NEW_RAW
+                ADD_NEW_RAW: DEFAULT_ADD_NEW_RAW,
+                ADD_NEW_RAW_COUNTER: DEFAULT_ADD_NEW_RAW_COUNTER,
+                REMOVE_RAWS: DEFAULT_REMOVE_RAWS
             })
         return form

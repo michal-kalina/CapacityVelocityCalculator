@@ -9,7 +9,7 @@
 {% block content %}
     {% if object %}
     <h1>Update sprint capacity</h1>
-    <form method="post" action="">
+    <form id="formset" method="post" action="">
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
@@ -57,7 +57,8 @@
         <p>
             {{ formset.management_form }}
             {% csrf_token %}
-            <input type="submit" value="Add new item" class="btn btn-primary"/>
+            <input id="add-item" type="button" value="Add" class="btn btn-primary"/>
+            <input id="remove-item" type="button" value="Remove" class="btn btn-primary"/>
             <input type="submit" value="Save" class="btn btn-primary"/>
         </p>
     </form>
@@ -75,8 +76,22 @@
     deleteText: 'remove'
 }); {% endcomment %}
 // Hanlde check delete button
-function addNewRow() {
-
+function addItem() {
+    $("#add-item").click(function(event) {
+        const addItem = $('#id_form-ADD');
+        const addItemCounter = $('#id_form-ADD_COUNTER');
+        const newVal = parseInt(addItemCounter.val(), 10) + 1
+        addItemCounter.val(newVal);
+        addItem.val('1');
+        document.forms["formset"].submit();
+    });
+}
+function RemoveItem() {
+    $("#remove-item").click(function(event) {
+        const deleteItem = $('#id_form-DELETE');
+        deleteItem.val('1');
+        document.forms["formset"].submit();
+    });
 }
 function toggleDeleteItem() {
     $("tr #checkbox-delete > input[type=checkbox]").change(function() {
@@ -89,6 +104,8 @@ function toggleDeleteItem() {
             .toggleClass('bi-trash', !checked);
     });
 }
+addItem();
+RemoveItem();
 toggleDeleteItem();
 
 </script>
