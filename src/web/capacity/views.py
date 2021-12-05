@@ -10,7 +10,7 @@ from django.views.generic import View
 from django.urls import reverse_lazy
 from .models import Person, SprintCapacity, Sprint, SprintCapacityPresenceItem
 from .dtos import OutputDto, OutputItemDto
-from .forms import SprintCapacityUpdatePersonFormset, ADD_NEW_RAW
+from .forms import ADD_NEW_RAW_COUNTER, DEFAULT_ADD_NEW_RAW, DEFAULT_ADD_NEW_RAW_COUNTER, DEFAULT_REMOVE_RAWS, DEFAULT_SAVE_RAWS, REMOVE_RAWS, SprintCapacityUpdatePersonFormset, ADD_NEW_RAW, SAVE_RAWS
 from django.forms import formset_factory
 from django.forms.formsets import DELETION_FIELD_NAME
 from django.db import IntegrityError, transaction
@@ -55,7 +55,7 @@ class SprintCapacityUpdateView(DetailView):
         print(request.POST)
         formset = self.get_formset(request.POST)
 
-        if formset.is_valid() and formset.management_form.cleaned_data.get(ADD_NEW_RAW) == 0:
+        if formset.is_valid() and formset.management_form.cleaned_data.get(SAVE_RAWS) == 1:
             return self.form_valid(formset)
         else:
             return self.form_invalid(formset)    
@@ -107,9 +107,10 @@ class SprintCapacityUpdateView(DetailView):
             data = {
                 'form-TOTAL_FORMS': f'{output.size}',
                 'form-INITIAL_FORMS': f'{output.size}',
-                'form-ADD': '0',
-                'form-ADD_COUNTER': '0',
-                'form-DELETE': '0'
+                f'form-{SAVE_RAWS}': f'{DEFAULT_SAVE_RAWS}',
+                f'form-{ADD_NEW_RAW}': f'{DEFAULT_ADD_NEW_RAW}',
+                f'form-{ADD_NEW_RAW_COUNTER}': f'{DEFAULT_ADD_NEW_RAW_COUNTER}',
+                f'form-{REMOVE_RAWS}': f'{DEFAULT_REMOVE_RAWS}'
             }
             # initialize formset forms with data
             for i in range(0, output.size):
@@ -121,21 +122,18 @@ class SprintCapacityUpdateView(DetailView):
             return (self.get_formset(data), output)
 
         def add_item_to_formset(formsetData: dict, output: OutputDto) -> SprintCapacityUpdatePersonFormset:
-            new_row_counter = int(formsetData['form-ADD_COUNTER'])
+            new_row_counter = int(formsetData[f'form-{ADD_NEW_RAW_COUNTER}'])
             size = output.size
             full_size = size + new_row_counter
             
             # Set variables
             formsetData.update({
-                'form-ADD': '0',
-                'form-ADD_COUNTER': f'{new_row_counter}',
+                f'form-{ADD_NEW_RAW}': f'{DEFAULT_ADD_NEW_RAW}',
+                f'form-{ADD_NEW_RAW_COUNTER}': f'{new_row_counter}',
                 'form-TOTAL_FORMS': f'{full_size}'
             })
 
             for index in range(size, full_size):
-                # Increasing elements by one dummy item
-                output.append_empty_item()
-                # if the key is present, skip it
                 if f'form-{index}-id' not in formsetData:
                     formsetData.update({
                         # Adding new form data
@@ -143,37 +141,61 @@ class SprintCapacityUpdateView(DetailView):
                         f'form-{index}-sprint_id': output.sprint_id,
                         f'form-{index}-persons': '0'
                     })
+                    selected_person_id = 0
+                else:
+                    selected_person_id = int(formsetData[f'form-{index}-persons']) if formsetData[f'form-{index}-persons'] != '' else 0
+
+                # Add dummy item with proper selected persion id
+                output.append_empty_item(selected_person_id)
 
             return (self.get_formset(formsetData), output)
 
-        # TODO: remove item move to success page - which is wrong
         def remove_item_from_formset(formsetData: dict, output: OutputDto) -> SprintCapacityUpdatePersonFormset:
-            row_counter = int(formsetData['form-ADD_COUNTER'])
-            size = output.size
-            full_size = size + row_counter
+            row_counter = int(formsetData[f'form-{ADD_NEW_RAW_COUNTER}'])
+            full_size = output.size + row_counter
 
-            for index in range(0, full_size):
-                if f'form-{index}-DELETE' in formsetData and formsetData[f'form-{index}-DELETE'] == 'on':
+            # Prepare output object by adding required items
+            for index in range(output.size, full_size):
+                if f'form-{index}-id' not in formsetData:
+                    selected_person_id = 0
+                else:
+                    selected_person_id = int(formsetData[f'form-{index}-persons']) if formsetData[f'form-{index}-persons'] != '' else 0
+
+                # Add dummy item with proper selected persion id
+                output.append_empty_item(selected_person_id)
+
+            # Delete selected items
+            for index in range(output.size, 0, -1):
+                print(index)
+                if f'form-{index}-{DELETION_FIELD_NAME}' in formsetData and formsetData[f'form-{index}-{DELETION_FIELD_NAME}'] == 'on':
+                    # Detecting elements that were added in update session
                     if formsetData[f'form-{index}-id'] == '0':
                         # Set variables only for elements artificially added
                         row_counter = row_counter - 1
-                        formsetData.update({
-                            'form-ADD_COUNTER': f'{row_counter}',
-                        })
-                    formsetData[f'form-{index}-DELETE'] = ''
-                    del formsetData[f'form-{index}-id']
-                    del formsetData[f'form-{index}-sprint_id']
-                    del formsetData[f'form-{index}-persons']
                     output.remove_at(index)
-                else:
-                    if index >= output.size and output.size > row_counter:
-                        # We need to add empty item after moving beyond output elements
-                        output.append_empty_item()
+
+            # Reset formset properties
+            for index in range(0, output.size):
+                formsetData.update({
+                    f'form-{index}-{DELETION_FIELD_NAME}': '',
+                    f'form-{index}-id': f'{output.items[index].id}',
+                    f'form-{index}-sprint_id': f'{output.sprint_id}',
+                    f'form-{index}-persons': f'{output.items[index].person_id}'
+                })
+            
+            # Remove unused formset items
+            for index in range(output.size, full_size):
+                if f'form-{index}-{DELETION_FIELD_NAME}' in formsetData:
+                    del formsetData[f'form-{index}-{DELETION_FIELD_NAME}']
+                del formsetData[f'form-{index}-id']
+                del formsetData[f'form-{index}-sprint_id']
+                del formsetData[f'form-{index}-persons']
 
             # Set variables
             formsetData.update({
-                'form-DELETE': '0',
-                'form-TOTAL_FORMS': f'{output.size + row_counter}'
+                f'form-{REMOVE_RAWS}': f'{DEFAULT_REMOVE_RAWS}',
+                f'form-{ADD_NEW_RAW_COUNTER}': f'{row_counter}',
+                'form-TOTAL_FORMS': f'{output.size}'
             })
 
             return (self.get_formset(formsetData), output)
@@ -181,9 +203,9 @@ class SprintCapacityUpdateView(DetailView):
         if('formset' in kwargs):
             formsetDict = kwargs['formset'].data.dict()
             # Add item
-            if 'form-ADD' in formsetDict and formsetDict['form-ADD'] == '1':
+            if f'form-{ADD_NEW_RAW}' in formsetDict and formsetDict[f'form-{ADD_NEW_RAW}'] == '1':
                 formset, self.object = add_item_to_formset(formsetDict, kwargs['object'])
-            elif 'form-DELETE' in formsetDict and formsetDict['form-DELETE'] == '1':
+            elif f'form-{REMOVE_RAWS}' in formsetDict and formsetDict[f'form-{REMOVE_RAWS}'] == '1':
                 formset, self.object = remove_item_from_formset(formsetDict, kwargs['object'])
             else:
                 formset = get_initial_formset(self.object)

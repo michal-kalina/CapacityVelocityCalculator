@@ -3,7 +3,6 @@ from .models import SprintCapacityPresenceItem, SprintCapacity, Sprint
 from django.http import Http404
 from django.db.models import QuerySet
 from datetime import datetime, timedelta
-from django.utils.functional import cached_property
 
 class OutputItemPresenceDto:
     def __init__(self, id: int, date: datetime, presence: SprintCapacityPresenceItem.PRESENCE_CHOICES) -> None:
@@ -40,7 +39,7 @@ class OutputDto:
             s += f"{i} "
         return f"<{self.sprint_id} {self.sprint_name}, items: [{s}]>"
 
-    @cached_property
+    @property
     def size(self) -> int:
         """Number of elements it 'items' list"""
         return len(self.items)
@@ -59,16 +58,16 @@ class OutputDto:
             yield start_
             start_ = end_
 
-    def empty_item(self) -> OutputItemDto:
+    def empty_item(self, select_person_id: int) -> OutputItemDto:
         data: list[OutputItemPresenceDto] = list[OutputItemPresenceDto]()
         for date in list(self.create_date_ranges(self.from_date, self.to_date, **{'days': 1})):
             data.append(OutputItemPresenceDto(0, date, SprintCapacityPresenceItem.PRESENCE_CHOICES[1]))
         
-        outputItem = OutputItemDto(0, 0, "<unknown>", data)
+        outputItem = OutputItemDto(0, select_person_id, "<unknown>", data)
         return outputItem
 
-    def append_empty_item(self) -> OutputItemDto:
-        outputItem = self.empty_item()
+    def append_empty_item(self, select_person_id: int) -> OutputItemDto:
+        outputItem = self.empty_item(select_person_id)
         self.items.append(outputItem)
         return outputItem
 
@@ -80,8 +79,7 @@ class OutputDto:
         return data
 
     def remove_at(self, index: int) -> None:
-        if index in self.items:
-            self.items.pop(index)
+        self.items.pop(index)
 
     def get_data(self, sprint_id) -> None:
         try:
@@ -107,4 +105,4 @@ class OutputDto:
                 for presence in presences:
                     data.append(OutputItemPresenceDto(presence.id, presence.date, presence.presence))
 
-            self.items.append(OutputItemDto(capacity.id,capacity.person.id,f'{capacity.person.name} {capacity.person.surname}', data))
+            self.items.append(OutputItemDto(capacity.id, capacity.person.id, f'{capacity.person.name} {capacity.person.surname}', data))

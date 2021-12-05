@@ -59,7 +59,7 @@
             {% csrf_token %}
             <input id="add-item" type="button" value="Add" class="btn btn-primary"/>
             <input id="remove-item" type="button" value="Remove" class="btn btn-primary"/>
-            <input type="submit" value="Save" class="btn btn-primary"/>
+            <input id="submit-form" type="button" value="Save" class="btn btn-primary"/>
         </p>
     </form>
     {% else %}
@@ -69,13 +69,14 @@
 
 
 {% block script_section %}
-{% comment %} <script src="{% static 'jquery.formset.js' %}"></script> {% endcomment %}
 <script type="text/javascript">
-{% comment %} $('.link-formset').formset({
-    addText: 'add link',
-    deleteText: 'remove'
-}); {% endcomment %}
-// Hanlde check delete button
+function submitForm() {
+    $("#submit-form").click(function(event) {
+        const submitForm = $('#id_form-SAVE-RAWS');
+        submitForm.val('1');
+        document.forms["formset"].submit();
+    });
+}
 function addItem() {
     $("#add-item").click(function(event) {
         const addItem = $('#id_form-ADD');
@@ -86,7 +87,7 @@ function addItem() {
         document.forms["formset"].submit();
     });
 }
-function RemoveItem() {
+function removeItem() {
     $("#remove-item").click(function(event) {
         const deleteItem = $('#id_form-DELETE');
         deleteItem.val('1');
@@ -105,8 +106,9 @@ function toggleDeleteItem() {
     });
 }
 addItem();
-RemoveItem();
+removeItem();
 toggleDeleteItem();
+submitForm();
 
 </script>
 {% endblock %}
