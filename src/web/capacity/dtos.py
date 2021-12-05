@@ -25,12 +25,13 @@ class OutputItemDto:
         return f"<{self.id} {self.person_id}, {self.person_name} data: [{s}]>"
 
 class OutputDto:
-    def __init__(self, sprint_id: int) -> None:
+    def __init__(self, sprint_id: int, set_dummy_data: bool = False) -> None:
         self.sprint_id: int = sprint_id
         self.sprint_name: str = ''
         self.from_date = None
         self.to_date = None
         self.items: list[OutputItemDto] = list[OutputItemDto]()
+        self._set_dummy_data = set_dummy_data
         self.get_data(sprint_id)
     
     def __str__(self) -> str:
@@ -58,14 +59,25 @@ class OutputDto:
             yield start_
             start_ = end_
 
-    def append_empty_item(self) -> OutputItemDto:
+    def empty_item(self) -> OutputItemDto:
         data: list[OutputItemPresenceDto] = list[OutputItemPresenceDto]()
         for date in list(self.create_date_ranges(self.from_date, self.to_date, **{'days': 1})):
             data.append(OutputItemPresenceDto(0, date, SprintCapacityPresenceItem.PRESENCE_CHOICES[1]))
         
         outputItem = OutputItemDto(0, 0, "<unknown>", data)
+        return outputItem
+
+    def append_empty_item(self) -> OutputItemDto:
+        outputItem = self.empty_item()
         self.items.append(outputItem)
         return outputItem
+
+    def get_dummy_data_for(self) -> list[OutputItemPresenceDto]:
+        data: list[OutputItemPresenceDto] = list[OutputItemPresenceDto]()
+        for date in list(self.create_date_ranges(self.from_date, self.to_date, **{'days': 1})):
+            data.append(OutputItemPresenceDto(0, date, SprintCapacityPresenceItem.PRESENCE_CHOICES[1]))
+            
+        return data
 
     def remove_at(self, index: int) -> None:
         if index in self.items:
@@ -81,17 +93,18 @@ class OutputDto:
             raise Http404(f'There is no sprint with if {sprint_id}')
 
         current_sprint_capacities: QuerySet[SprintCapacity] = SprintCapacity.objects.filter(sprint__id=sprint.id)
-
-        outputItemPresences: list[OutputItemPresenceDto] = None
         for capacity in current_sprint_capacities:
             # Init arrays
-            outputItemPresences: list[OutputItemPresenceDto] = list[OutputItemPresenceDto]()
+            data: list[OutputItemPresenceDto] = list[OutputItemPresenceDto]()
 
-            # Get person and its presences
-            presences: QuerySet[SprintCapacityPresenceItem] = SprintCapacityPresenceItem.objects.filter(sprint_capacity__id=capacity.id).order_by('date')
+            if self._set_dummy_data:
+                data = self.get_dummy_data_for()
+            else:
+                # Get person and its presences
+                presences: QuerySet[SprintCapacityPresenceItem] = SprintCapacityPresenceItem.objects.filter(sprint_capacity__id=capacity.id).order_by('date')
 
-            # Convert it to DTO lists
-            for presence in presences:
-                outputItemPresences.append(OutputItemPresenceDto(presence.id, presence.date, presence.presence))
+                # Convert it to DTO lists
+                for presence in presences:
+                    data.append(OutputItemPresenceDto(presence.id, presence.date, presence.presence))
 
-            self.items.append(OutputItemDto(capacity.id,capacity.person.id,f'{capacity.person.name} {capacity.person.surname}', outputItemPresences))
+            self.items.append(OutputItemDto(capacity.id,capacity.person.id,f'{capacity.person.name} {capacity.person.surname}', data))

@@ -44,7 +44,7 @@ class SprintCapacityUpdateView(DetailView):
     success_url = reverse_lazy('capacity:current')
 
     def get_object(self):
-        output = OutputDto(self.kwargs['sprint_id'])
+        output = OutputDto(self.kwargs['sprint_id'], True)
         return output
 
     def get(self, request, *args, **kwargs):
@@ -118,7 +118,7 @@ class SprintCapacityUpdateView(DetailView):
                     f'form-{i}-sprint_id': output.sprint_id,
                     f'form-{i}-persons': output.items[i].person_id,
                 })
-            return self.get_formset(data)
+            return (self.get_formset(data), output)
 
         def add_item_to_formset(formsetData: dict, output: OutputDto) -> SprintCapacityUpdatePersonFormset:
             new_row_counter = int(formsetData['form-ADD_COUNTER'])
@@ -146,6 +146,7 @@ class SprintCapacityUpdateView(DetailView):
 
             return (self.get_formset(formsetData), output)
 
+        # TODO: remove item move to success page - which is wrong
         def remove_item_from_formset(formsetData: dict, output: OutputDto) -> SprintCapacityUpdatePersonFormset:
             row_counter = int(formsetData['form-ADD_COUNTER'])
             size = output.size
@@ -187,7 +188,7 @@ class SprintCapacityUpdateView(DetailView):
             else:
                 formset = get_initial_formset(self.object)
         else:
-            formset = get_initial_formset(self.object)
+            formset, self.object = get_initial_formset(self.object)
 
         print(self.object)
         print(formset.data)
